@@ -4,7 +4,7 @@ Default Streamlink Library for Kodi Addon [Twilight0/service.streamlink.proxy](h
 
 You can install it from [repository.Twilight0](https://github.com/Twilight0/repo)
 
-Sample code to use in your plugin & start using the following snippet:
+Sample code to use in your plugin & start using with the following snippet:
 
     import streamlink.session
     # import sys

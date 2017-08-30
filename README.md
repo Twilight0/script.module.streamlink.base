@@ -1,5 +1,27 @@
 # script.module.streamlink.base
 
-Default Streamlink Library for Kodi Addon [neverreply/service.streamlink.proxy](https://github.com/neverreply/service.streamlink.proxy)
+Default Streamlink Library for Kodi Addon [Twilight0/service.streamlink.proxy](https://github.com/Twilight0/service.streamlink.proxy)
 
-You can install it from [repository.neverreply](https://github.com/neverreply/repo)
+You can install it from [repository.Twilight0](https://github.com/Twilight0/repo)
+
+Sample code to use in your plugin & start using the following snippet:
+
+    import streamlink.session
+    # import sys
+
+    def resolve(url, quality='best'):
+
+        try:
+
+            session = streamlink.session.Streamlink()
+            # session.set_loglevel("debug")
+            # session.set_logoutput(sys.stdout)
+            plugin = session.resolve_url(url)
+            streams = plugin.get_streams()
+            streams = repr(streams[quality])
+            link = streams.partition('(\'')[2][:-3]
+
+            return link
+
+        except:
+            pass

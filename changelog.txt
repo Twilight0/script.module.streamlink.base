@@ -1,0 +1,19 @@
++ 2017.08.30
+- Removed dependency for pycountry &amp; ordereddict
+
++ 2017.07.19
+- Fixed temp folder on Android
+
++ 2017.07.17.2
+- update import
+
++ 2017.07.17.1
+- Merged Plugins into the same Kodi Plugin
+
++ 2017.07.17
+- streamlink 5f658c8199690253dde8868b7ae0714f0cc5d88a
+- Renamed crypto.py -> cryptofix.py
+- use pycountry and streamlink.crypto
+
++ 2017.07.13
+- streamlink 5cc7793ff07e6eb9841287ed30fc7414379c7649

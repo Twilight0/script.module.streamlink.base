@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.streamlink.base" name="Streamlink Library" version="2017.08.30" provider-name="Twilight0">
+<addon id="script.module.streamlink.base" name="Streamlink Library" version="2017.09.05" provider-name="Twilight0">
   <requires>
     <import addon="xbmc.python" version="2.24.0"/>
     <import addon="script.module.requests" version="2.12.4"/>
@@ -7,7 +7,7 @@
     <import addon="script.module.futures" version="2.2.0"/>
     <import addon="script.module.singledispatch" version="3.4.0.3"/>
     <import addon="script.module.streamlink.crypto" version="1.1.0"/>
-    <import addon="service.streamlink.plugins" version="1.0.0" optional="true"/>
+    <import addon="script.module.streamlink.plugins" version="1.0.2" optional="true"/>
   </requires>
   <extension point="xbmc.python.module" library="resources/lib/"/>
   <extension point="xbmc.addon.metadata">
@@ -21,6 +21,11 @@
       <icon>resources/icon.png</icon>
     </assets>
     <news>
++ 2017.09.05
+- Added dependency for streamlink plugins
+- Updated to commit/f26733cfc83156db32f9721cca71ebf3b86e0dbd
+- Added websocket module in utils directory
+
 + 2017.08.30
 - Removed dependency for pycountry &amp; ordereddict
 

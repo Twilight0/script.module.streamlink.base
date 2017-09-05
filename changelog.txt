@@ -1,3 +1,8 @@
++ 2017.09.05
+- Added dependency for streamlink plugins
+- Updated to commit/f26733cfc83156db32f9721cca71ebf3b86e0dbd
+- Added websocket module in utils directory
+
 + 2017.08.30
 - Removed dependency for pycountry &amp; ordereddict
 

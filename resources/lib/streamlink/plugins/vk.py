@@ -1,13 +1,10 @@
-import json
 import re
 
 from streamlink.plugin import Plugin
 from streamlink.plugin.api import http
-from streamlink.plugin.api import validate
 from streamlink.compat import urlparse, unquote
 from streamlink.stream import HTTPStream, HLSStream
-from streamlink.utils import parse_json, update_scheme
-from streamlink.utils.cryptofix import unpad_pkcs5
+
 
 class VK(Plugin):
     _url_re = re.compile(r"http(?:s)?://(\w+\.)?vk.com/video-[0-9]*_[0-9]*")

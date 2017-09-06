@@ -1,3 +1,6 @@
++ 2017.09.06
+- Fixes for relative imports
+
 + 2017.09.05
 - Added dependency for streamlink plugins
 - Updated to commit/f26733cfc83156db32f9721cca71ebf3b86e0dbd

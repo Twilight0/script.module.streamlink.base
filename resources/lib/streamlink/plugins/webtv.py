@@ -11,7 +11,7 @@ from streamlink.plugin.api import http
 from streamlink.plugin.api import validate
 from streamlink.stream import HLSStream
 from streamlink.utils import parse_json, update_scheme
-from ..utils.cryptofix import unpad_pkcs5
+from streamlink.utils.cryptofix import unpad_pkcs5
 
 
 class WebTV(Plugin):

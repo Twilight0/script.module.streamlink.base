@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.streamlink.base" name="Streamlink Library" version="2017.09.06" provider-name="Twilight0">
+<addon id="script.module.streamlink.base" name="Streamlink Library" version="2017.09.20" provider-name="Twilight0">
   <requires>
     <import addon="xbmc.python" version="2.24.0"/>
     <import addon="script.module.requests" version="2.12.4"/>
@@ -21,6 +21,10 @@
       <icon>resources/icon.png</icon>
     </assets>
     <news>
++ 2017.09.20
+- Fixes for ordered dict import for Kodi 16
+- Rebased on upstream 0.8.1 release
+
 + 2017.09.06
 - Fixes for relative imports
     

@@ -5,7 +5,7 @@ import re
 try:
     from collections import OrderedDict
 except ImportError:
-    from ..packages.flashmedia.ordereddict import OrderedDict
+    from streamlink.utils.ordereddict import OrderedDict
 
 from functools import partial
 

@@ -31,7 +31,7 @@ elif is_py3:
 try:
     from collections import OrderedDict
 except ImportError:
-    from .ordereddict import OrderedDict
+    from streamlink.utils.ordereddict import OrderedDict
 
 __all__ = ["is_py2", "is_py3", "is_win32", "str", "bytes", "range",
            "OrderedDict"]

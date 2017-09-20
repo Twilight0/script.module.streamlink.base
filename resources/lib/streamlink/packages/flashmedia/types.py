@@ -1,4 +1,5 @@
-from .compat import OrderedDict, is_py2, str, bytes, integer_types, string_types
+from .compat import is_py2, str, bytes, integer_types, string_types
+from streamlink.utils.ordereddict import OrderedDict
 from .util import pack_bytes_into
 
 from collections import namedtuple

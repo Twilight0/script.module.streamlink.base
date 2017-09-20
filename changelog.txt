@@ -1,3 +1,7 @@
++ 2017.09.20
+- Fixes for ordered dict import for Kodi 16
+- Rebased on upstream 0.8.1 release
+
 + 2017.09.06
 - Fixes for relative imports
 

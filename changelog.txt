@@ -1,7 +1,7 @@
 + 2017.09.20
 - Fixes for ordered dict import for Kodi 16
 - Rebased on upstream 0.8.1 release
-- Removed dependency for shutil_which
+- Removed dependency for shutil_which &amp; singledispatch
 
 + 2017.09.06
 - Fixes for relative imports

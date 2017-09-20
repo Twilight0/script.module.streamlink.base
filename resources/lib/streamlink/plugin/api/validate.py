@@ -22,7 +22,7 @@ from copy import copy as copy_obj
 try:
     from functools import singledispatch
 except ImportError:
-    from singledispatch import singledispatch
+    from streamlink.utils.singledispatch import singledispatch
 
 from ...compat import is_py2, urlparse
 from ...exceptions import PluginError

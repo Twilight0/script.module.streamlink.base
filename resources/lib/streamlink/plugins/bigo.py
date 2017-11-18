@@ -11,6 +11,7 @@ from streamlink.stream import Stream, HLSStream
 class BigoStream(Stream):
     """
     Custom streaming protocol for Bigo
+
     The stream is started by sending the uid and sid as little-endian unsigned longs
     after connecting to the server. The video stream is FLV.
     """

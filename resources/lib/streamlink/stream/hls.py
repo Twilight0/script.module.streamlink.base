@@ -288,10 +288,7 @@ class HLSStream(HTTPStream):
 
         logger = session_.logger.new_module("hls.parse_variant_playlist")
 
-        try:
-            locale = session_.localization
-        except:
-            locale = 'en_US'
+        locale = 'en_US'
 
         # Backwards compatibility with "namekey" and "nameprefix" params.
         name_key = request_params.pop("namekey", name_key)

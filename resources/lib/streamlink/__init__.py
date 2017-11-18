@@ -1,4 +1,4 @@
-# coding: utf8
+# -*- coding: utf-8 -*-
 """Streamlink extracts streams from various services.
 
 The main compontent of Streamlink is a command-line utility that
@@ -22,7 +22,7 @@ if version_info[:2] == (2, 6):
     )
 
 __title__ = "streamlink"
-__version__ = "0.8.1"
+__version__ = "0.9.0"
 __license__ = "Simplified BSD"
 __author__ = "Streamlink"
 __copyright__ = "Copyright 2016 Streamlink"

@@ -827,7 +827,7 @@ class WebSocketApp(object):
         close websocket connection.
         """
         self.keep_running = False
-        if (self.sock != None):
+        if self.sock is not None:
             self.sock.close()
 
     def _send_ping(self, interval):

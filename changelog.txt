@@ -1,3 +1,7 @@
++ 2018.01.11
+- Based on https://github.com/streamlink/streamlink/commit/790bdf26a62aff74a35abc99fc4f3c07d6e5dcc1
+  > Includes unmerged PR: https://github.com/streamlink/streamlink/pull/1423
+
 + 2017.11.18
 - Rebased on upstream 0.9.0
 

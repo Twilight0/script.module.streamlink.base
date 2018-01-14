@@ -5,6 +5,7 @@ import traceback
 import requests
 
 from streamlink.utils import update_scheme
+from streamlink.utils.l10n import Localization
 from . import plugins, __version__
 from .compat import is_win32
 from .exceptions import NoPluginError, PluginError
@@ -456,5 +457,10 @@ class Streamlink(object):
     @property
     def version(self):
         return __version__
+	
+    @property
+    def localization(self):
+        return Localization(self.get_option("locale"))
+		
 
 __all__ = ["Streamlink"]

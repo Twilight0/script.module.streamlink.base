@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.01.11" provider-name="Twilight0">
+<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.01.14" provider-name="Twilight0">
   <requires>
     <import addon="xbmc.python" version="2.24.0"/>
     <import addon="script.module.requests" version="2.12.4"/>
     <import addon="script.module.futures" version="2.2.0"/>
-    <import addon="script.module.streamlink.crypto" version="1.1.0"/>
+    <import addon="script.module.streamlink.crypto" version="1.2.0"/>
     <import addon="script.module.streamlink.plugins" version="1.0.3"/>
   </requires>
   <extension point="xbmc.python.module" library="resources/lib/"/>
@@ -19,6 +19,10 @@
       <icon>resources/icon.png</icon>
     </assets>
     <news>
++ 2018.01.14
+- Fix introduced in hls plugin for locale, thanks to jairoxyz
+- Minor other fixes
+
 + 2018.01.11
 - Based on https://github.com/streamlink/streamlink/commit/790bdf26a62aff74a35abc99fc4f3c07d6e5dcc1
   > Includes unmerged PR: https://github.com/streamlink/streamlink/pull/1423

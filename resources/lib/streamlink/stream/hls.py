@@ -339,7 +339,6 @@ class HLSStream(HTTPStream):
         """
         logger = session_.logger.new_module("hls.parse_variant_playlist")
         locale = session_.localization
-		
         # Backwards compatibility with "namekey" and "nameprefix" params.
         name_key = request_params.pop("namekey", name_key)
         name_prefix = request_params.pop("nameprefix", name_prefix)
@@ -376,10 +375,7 @@ class HLSStream(HTTPStream):
                     default_audio = media
 
                 # select the first audio stream that matches the users explict language selection
-                if ((media.language == audio_select or media.name == audio_select) or
-                    ((not preferred_audio or media.default) and
-                        locale.explicit and
-                        locale.equivalent(language=media.language))):
+                if (media.language == audio_select or media.name == audio_select) or ((not preferred_audio or media.default) and locale.explicit and locale.equivalent(language=media.language)):
                     preferred_audio = media
 
             # final fallback on the first audio stream listed

@@ -1,3 +1,7 @@
++ 2018.01.14
+- Fix introduced in hls plugin for locale, thanks to jairoxyz
+- Minor other fixes
+
 + 2018.01.11
 - Based on https://github.com/streamlink/streamlink/commit/790bdf26a62aff74a35abc99fc4f3c07d6e5dcc1
   > Includes unmerged PR: https://github.com/streamlink/streamlink/pull/1423

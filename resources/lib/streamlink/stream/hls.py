@@ -338,7 +338,8 @@ class HLSStream(HTTPStream):
                          name, pixels, bitrate.
         """
         logger = session_.logger.new_module("hls.parse_variant_playlist")
-        locale = 'en_US'
+        locale = session_.localization
+		
         # Backwards compatibility with "namekey" and "nameprefix" params.
         name_key = request_params.pop("namekey", name_key)
         name_prefix = request_params.pop("nameprefix", name_prefix)

@@ -1,3 +1,6 @@
++ 2018.02.05
+- Bumped up to the latest a8d22f15c789045d8c4f709e587b6e443e8816c8 commit
+
 + 2018.01.14
 - Fix introduced in hls plugin for locale, thanks to jairoxyz
 - Minor other fixes

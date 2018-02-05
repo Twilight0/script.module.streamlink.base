@@ -26,7 +26,7 @@ class VK(Plugin):
         # If this is a 'videos' catalog URL with an video ID in the GET request, get that instead
         parsed_url = urlparse(url)
         if parsed_url.path.startswith('/videos-'):
-            query = {v[0]:v[1] for v in [q.split('=') for q in parsed_url.query.split('&')] if v[0] == 'z'}
+            query = {v[0]: v[1] for v in [q.split('=') for q in parsed_url.query.split('&')] if v[0] == 'z'}
             try:
                 true_path = unquote(query['z']).split('/')[0]
                 return parsed_url.scheme + '://' + parsed_url.netloc + '/' + true_path
@@ -90,5 +90,6 @@ class VK(Plugin):
                         yield str(q), HTTPStream(self.session, s)
             except IOError:
                 self.logger.warning("Could not open the stream, perhaps the channel is offline")
+
 
 __plugin__ = VK

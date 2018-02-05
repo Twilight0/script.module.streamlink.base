@@ -6,9 +6,7 @@ from Crypto.Cipher import AES
 from streamlink.stream import hls_playlist
 from streamlink.stream.ffmpegmux import FFMPEGMuxer, MuxedStream
 from streamlink.stream.http import HTTPStream
-from streamlink.stream.segmented import (SegmentedStreamReader,
-                                         SegmentedStreamWriter,
-                                         SegmentedStreamWorker)
+from streamlink.stream.segmented import (SegmentedStreamReader, SegmentedStreamWriter, SegmentedStreamWorker)
 from ..exceptions import StreamError
 
 Sequence = namedtuple("Sequence", "num segment")
@@ -17,16 +15,17 @@ Sequence = namedtuple("Sequence", "num segment")
 def num_to_iv(n):
     return struct.pack(">8xq", n)
 
-def pkcs7_decode(paddedData, keySize = 16):
-        '''
-        Remove the PKCS#7 padding
-        '''
-        # Use ord + [-1:] to support both python 2 and 3
-        val = ord(paddedData[-1:])
-        if val > keySize:
-            raise StreamError("Input is not padded or padding is corrupt, got padding size of {0}".format(val))
 
-        return paddedData[:-val]
+def pkcs7_decode(paddedData, keySize=16):
+    '''
+    Remove the PKCS#7 padding
+    '''
+    # Use ord + [-1:] to support both python 2 and 3
+    val = ord(paddedData[-1:])
+    if val > keySize:
+        raise StreamError("Input is not padded or padding is corrupt, got padding size of {0}".format(val))
+
+    return paddedData[:-val]
 
 
 class HLSStreamWriter(SegmentedStreamWriter):

@@ -9,17 +9,6 @@ from streamlink.exceptions import StreamError
 import time
 import tempfile
 
-import os
-import xbmc
-import xbmcvfs
-
-xdg_cache = xbmc.translatePath('special://profile/addon_data/script.module.streamlink.base').encode('utf-8')
-
-tmp_dir = os.path.join(xdg_cache, "tmp")
-
-if not xbmcvfs.exists(tmp_dir):
-    xbmcvfs.mkdirs(tmp_dir)
-
 
 class StreamProcessIO(StreamIOThreadWrapper):
     def __init__(self, session, process, fd, **kwargs):
@@ -57,7 +46,7 @@ class StreamProcess(Stream):
         if self.errorlog_path:
             self.stderr = open(self.errorlog_path, "w")
         elif self.errorlog:
-            self.stderr = tempfile.NamedTemporaryFile(dir=tmp_dir, prefix="streamlink", suffix=".err", delete=False)
+            self.stderr = tempfile.NamedTemporaryFile(prefix="streamlink", suffix=".err", delete=False)
         else:
             self.stderr = devnull()
 
@@ -66,7 +55,7 @@ class StreamProcess(Stream):
         return self.parameters
 
     @classmethod
-    def is_usable(cls, session): 
+    def is_usable(cls, session):
         raise NotImplementedError
 
     def open(self):
@@ -96,7 +85,7 @@ class StreamProcess(Stream):
             else:  # long argument
                 return "{0}{1}".format(long_option_prefix, key.replace("_", "-"))
 
-        # sorted for stability 
+        # sorted for stability
         for k, v in sorted(parameters.items(), key=itemgetter(0)):
             if not isinstance(v, list):  # long argument
                 cmdline.append(to_option(k))
@@ -171,5 +160,6 @@ class StreamProcess(Stream):
             raise StreamError("Unable to find `{0}' command".format(self.cmd))
 
         return cmd
+
 
 __all__ = ["StreamProcess"]

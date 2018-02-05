@@ -24,8 +24,7 @@ class OlympicChannel(Plugin):
         page = http.get(self.url)
         asset = re.search(r'asse_.{32}', str(page._content)).group(0)
         post_data = '{"asset_url":"/api/assets/%s/"}' % asset
-        stream_data = http.json(http.post(self._stream_get_url, data=post_data))['objects'][0]['level3'][
-            'streaming_url']
+        stream_data = http.json(http.post(self._stream_get_url, data=post_data))['objects'][0]['level3']['streaming_url']
         return HLSStream.parse_variant_playlist(self.session, stream_data)
 
     def _get_live_streams(self, lang, path):
@@ -40,7 +39,7 @@ class OlympicChannel(Plugin):
         post_data = '{"channel_url":"/api/channels/%s/"}' % live_res
         try:
             stream_data = http.json(http.post(self._stream_get_url, data=post_data))['stream_url']
-        except:
+        except BaseException:
             stream_data = http.json(http.post(self._stream_get_url, data=post_data))['channel_url']
         return HLSStream.parse_variant_playlist(self.session, stream_data)
 

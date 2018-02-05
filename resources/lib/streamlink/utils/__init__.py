@@ -2,9 +2,12 @@ import json
 import re
 import zlib
 
-import xml.etree.ElementTree as ET
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:  # pragma: no cover
+    import xml.etree.ElementTree as ET
 
-from streamlink.compat import urljoin, urlparse, parse_qsl, is_py2
+from streamlink.compat import urljoin, urlparse, parse_qsl, is_py2, urlunparse
 from streamlink.exceptions import PluginError
 from streamlink.utils.named_pipe import NamedPipe
 
@@ -20,7 +23,7 @@ def verifyjson(json, key):
     if not isinstance(json, dict):
         raise PluginError("JSON result is not a dict")
 
-    if not key in json:
+    if key not in json:
         raise PluginError("Missing '{0}' key in JSON".format(key))
 
     return json[key]
@@ -128,20 +131,24 @@ def rtmpparse(url):
                                                netloc=netloc,
                                                app=app)
 
-    return (tcurl, playpath)
+    return tcurl, playpath
 
 
 def update_scheme(current, target):
     """
     Take the scheme from the current URL and applies it to the
-    target URL if the target URL startswith //
+    target URL if the target URL startswith // or is missing a scheme
     :param current: current URL
     :param target: target URL
-    :return: target URL with the current URLs schema
+    :return: target URL with the current URLs scheme
     """
-    scheme = urlparse(current).scheme
-    if target.startswith("//"):
-        return "{0}:{1}".format(scheme, target)
+    target_p = urlparse(target)
+    if not target_p.scheme and target_p.netloc:
+        return "{0}:{1}".format(urlparse(current).scheme,
+                                urlunparse(target_p))
+    elif not target_p.scheme and not target_p.netloc:
+        return "{0}://{1}".format(urlparse(current).scheme,
+                                  urlunparse(target_p))
     else:
         return target
 
@@ -243,6 +250,7 @@ def escape_librtmp(value):
     value = value.replace(" ", "\\20")
     value = value.replace('"', "\\22")
     return value
+
 
 __all__ = ["urlopen", "urlget", "urlresolve", "swfdecompress", "swfverify",
            "verifyjson", "absolute_url", "parse_qsd", "parse_json", "res_json",

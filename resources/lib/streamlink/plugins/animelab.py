@@ -1,6 +1,5 @@
 from __future__ import print_function
 import re
-from pprint import pprint
 
 from streamlink.plugin import Plugin, PluginOptions
 from streamlink.plugin.api import http
@@ -84,7 +83,6 @@ class AnimeLab(Plugin):
                     q = video["videoQuality"]["description"]
                     s = HTTPStream(self.session, video["httpUrl"])
                     yield q, s
-
 
 
 __plugin__ = AnimeLab

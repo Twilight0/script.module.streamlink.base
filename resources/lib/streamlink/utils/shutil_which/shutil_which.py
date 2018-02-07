@@ -9,6 +9,7 @@ import sys
 
 __version__ = '3.5.1'
 
+
 def backport_which(cmd, mode=os.F_OK | os.X_OK, path=None):
     """Given a command, mode, and a PATH string, return the path which
     conforms to the given mode on the PATH, or None if there is no such

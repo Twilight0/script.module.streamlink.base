@@ -14,6 +14,7 @@ if not xbmcvfs.exists(tmp_dir):
     xbmcvfs.mkdirs(tmp_dir)
 
 if is_win32:
+
     from ctypes import windll, cast, c_ulong, c_void_p, byref
 
     PIPE_ACCESS_OUTBOUND = 0x00000002
@@ -25,6 +26,7 @@ if is_win32:
 
 
 class NamedPipe(object):
+
     def __init__(self, name):
         self.fifo = None
         self.pipe = None

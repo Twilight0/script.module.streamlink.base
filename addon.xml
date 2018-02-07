@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.02.05" provider-name="Twilight0">
+<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.02.07" provider-name="Twilight0">
   <requires>
     <import addon="xbmc.python" version="2.24.0"/>
     <import addon="script.module.requests" version="2.12.4"/>
     <import addon="script.module.futures" version="2.2.0"/>
     <import addon="script.module.streamlink.crypto" version="1.4.0"/>
-    <import addon="script.module.streamlink.plugins" version="1.0.3"/>
   </requires>
   <extension point="xbmc.python.module" library="resources/lib/"/>
   <extension point="xbmc.addon.metadata">
@@ -19,52 +18,9 @@
       <icon>resources/icon.png</icon>
     </assets>
     <news>
-+ 2018.02.05
-- Bumped up to the latest a8d22f15c789045d8c4f709e587b6e443e8816c8 commit
-
-+ 2018.01.14
-- Fix introduced in hls plugin for locale, thanks to jairoxyz
-- Minor other fixes
-
-+ 2018.01.11
-- Based on https://github.com/streamlink/streamlink/commit/790bdf26a62aff74a35abc99fc4f3c07d6e5dcc1
-  > Includes unmerged PR: https://github.com/streamlink/streamlink/pull/1423
-
-+ 2017.11.18
-- Rebased on upstream 0.9.0
-
-+ 2017.09.20
-- Fixes for ordered dict import for Kodi 16
-- Rebased on upstream 0.8.1 release
-- Removed dependency for shutil_which &amp; singledispatch
-
-+ 2017.09.06
-- Fixes for relative imports
-    
-+ 2017.09.05
-- Added dependency for streamlink plugins
-- Updated to commit/f26733cfc83156db32f9721cca71ebf3b86e0dbd
-- Added websocket module in utils directory
-
-+ 2017.08.30
-- Removed dependency for pycountry &amp; ordereddict
-
-+ 2017.07.19
-- Fixed temp folder on Android
-
-+ 2017.07.17.2
-- update import
-
-+ 2017.07.17.1
-- Merged Plugins into the same Kodi Plugin
-
-+ 2017.07.17
-- streamlink 5f658c8199690253dde8868b7ae0714f0cc5d88a
-- Renamed crypto.py -> cryptofix.py
-- use pycountry and streamlink.crypto
-
-+ 2017.07.13
-- streamlink 5cc7793ff07e6eb9841287ed30fc7414379c7649
++ 2018.02.07
+- Removed dependency for custom plugins
+~ [hls] New option --hls-segment-ignore-names
     </news>
   </extension>
 </addon>

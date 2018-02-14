@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.02.07" provider-name="Twilight0">
+<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.02.15" provider-name="Twilight0">
   <requires>
     <import addon="xbmc.python" version="2.24.0"/>
     <import addon="script.module.requests" version="2.12.4"/>
@@ -18,9 +18,9 @@
       <icon>resources/icon.png</icon>
     </assets>
     <news>
-+ 2018.02.07
-- Removed dependency for custom plugins
-~ [hls] New option --hls-segment-ignore-names
++ 2018.02.15
+- Added a forgotten import into plugin.py
+- Bumped to commit #81148668631feef066dbcd4f92f4ec0d6c9d7222
     </news>
   </extension>
 </addon>

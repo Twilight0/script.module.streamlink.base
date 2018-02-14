@@ -7,6 +7,8 @@ try:
 except ImportError:
     from streamlink.utils.ordereddict import OrderedDict
 
+from functools import partial
+
 from ..cache import Cache
 from ..exceptions import PluginError, NoStreamsError
 from ..options import Options

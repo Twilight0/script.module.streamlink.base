@@ -1,3 +1,7 @@
++ 2018.02.15
+- Added a forgotten import into plugin.py
+- Bumped to commit #81148668631feef066dbcd4f92f4ec0d6c9d7222
+
 + 2018.02.07
 - Removed dependency for custom plugins
 ~ [hls] New option --hls-segment-ignore-names

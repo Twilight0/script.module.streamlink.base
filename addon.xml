@@ -12,7 +12,7 @@
     <description>Streamlink Library for Kodi</description>
     <platform>all</platform>
     <license>Simplified BSD</license>
-    <source>https://github.com/streamlink/streamlink</source>
+    <source>https://github.com/Twilight0/script.module.streamlink.base/</source>
     <language>en</language>
     <assets>
       <icon>resources/icon.png</icon>

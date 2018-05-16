@@ -2,7 +2,7 @@ import random
 import re
 import itertools
 import ssl
-import websocket
+from streamlink.utils import websocket
 
 from streamlink.plugin import Plugin
 from streamlink.plugin.api import useragents, http

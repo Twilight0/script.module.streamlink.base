@@ -24,8 +24,7 @@ def backport_which(cmd, mode=os.F_OK | os.X_OK, path=None):
     # Additionally check that `file` is not a directory, as on Windows
     # directories pass the os.access check.
     def _access_check(fn, mode):
-        return (os.path.exists(fn) and os.access(fn, mode)
-                and not os.path.isdir(fn))
+        return (os.path.exists(fn) and os.access(fn, mode) and not os.path.isdir(fn))
 
     # If we're given a path with a directory part, look it up directly rather
     # than referring to PATH directories. This includes checking relative to the
@@ -71,8 +70,3 @@ def backport_which(cmd, mode=os.F_OK | os.X_OK, path=None):
                 if _access_check(name, mode):
                     return name
     return None
-
-try:
-    from shutil import which
-except ImportError:
-    which = backport_which

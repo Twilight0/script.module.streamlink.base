@@ -43,6 +43,7 @@ try:
     from shutil import which
 except ImportError:
     from streamlink.utils.shutil_which import shutil_which as which
+    which = which.backport_which()
 
 
 __all__ = ["is_py2", "is_py3", "is_py33", "is_win32", "str", "bytes",

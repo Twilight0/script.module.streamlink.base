@@ -2,7 +2,7 @@ import random
 import re
 import itertools
 import ssl
-from streamlink.utils import websocket
+import websocket
 
 from streamlink.plugin import Plugin
 from streamlink.plugin.api import useragents, http
@@ -34,16 +34,17 @@ class VLWebSocket(websocket.WebSocket):
 
 
 class VaughnLive(Plugin):
-    api_re = re.compile(r'new sApi\("(#(vl|igb|btv|pt|vtv)-[^"]+)",')
     servers = ["wss://sapi-ws-{0}x{1:02}.vaughnlive.tv".format(x, y) for x, y in itertools.product(range(1, 3),
                                                                                                    range(1, 6))]
     origin = "https://vaughnlive.tv"
     rtmp_server_map = {
-        "594140c69edad": "198.255.17.18",
-        "585c4cab1bef1": "198.255.17.26",
-        "5940d648b3929": "198.255.17.34",
-        "5941854b39bc4": "198.255.17.66"}
+        "594140c69edad": "192.240.105.171:1935",
+        "585c4cab1bef1": "192.240.105.171:1935",
+        "5940d648b3929": "192.240.105.171:1935",
+        "5941854b39bc4": "192.240.105.171:1935"
+    }
     name_remap = {"#vl": "live", "#btv": "btv", "#pt": "pt", "#igb": "instagib", "#vtv": "vtv"}
+    domain_map = {"vaughnlive": "#vl", "breakers": "#btv", "instagib": "#igb", "vapers": "#vtv", "pearltime": "#pt"}
 
     @classmethod
     def can_handle_url(cls, url):
@@ -88,17 +89,16 @@ class VaughnLive(Plugin):
         })
 
     def _get_streams(self):
-        res = http.get(self.url, headers={"User-Agent": useragents.CHROME})
+        m = _url_re.match(self.url)
+        if m:
+            stream_name = "{0}-{1}".format(self.domain_map[(m.group("domain").lower())], m.group("channel"))
 
-        m = self.api_re.search(res.text)
-        stream_name = m and m.group(1)
-
-        if stream_name:
             is_live, server, domain, channel, token, ingest = self._get_info(stream_name)
 
             if not is_live:
                 self.logger.info("Stream is currently off air")
             else:
+                self.logger.info("Stream powered by VaughnSoft - remember to support them.")
                 for s in self._get_rtmp_streams(server, domain, channel, token):
                     yield s
 

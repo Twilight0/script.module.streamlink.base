@@ -1,5 +1,6 @@
 import base64
 import re
+from functools import partial
 
 from Crypto.Cipher import Blowfish
 
@@ -59,8 +60,7 @@ class Rtve(Plugin):
         https?://(?:www\.)?rtve\.es/(?:directo|noticias|television|deportes|alacarta|drmn)/.*?/?
     """, re.VERBOSE)
     cdn_schema = validate.Schema(
-        validate.transform(parse_xml),
-        validate.xml_findall(".//preset"),
+        validate.transform(partial(parse_xml, invalid_char_entities=True)), validate.xml_findall(".//preset"),
         [
             validate.union({
                 "quality": validate.all(validate.getattr("attrib"),

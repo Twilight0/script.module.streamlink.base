@@ -51,9 +51,7 @@ class Bigo(Plugin):
     _flashvars_re = flashvars = re.compile(
         r'''^\s*(?<!<!--)<param.*value="tmp=(\d+)&channel=(\d+)&srv=(\d+\.\d+\.\d+\.\d+)&port=(\d+)"''',
         re.M)
-    _video_re = re.compile(
-        r'^\s*(?<!<!--)<source id="videoSrc" src="(http://.*\.m3u8)"',
-        re.M)
+    _video_re = re.compile(r"""videoSrc:\s?["'](?P<url>[^"']+)["']""", re.M)
 
     @classmethod
     def can_handle_url(cls, url):

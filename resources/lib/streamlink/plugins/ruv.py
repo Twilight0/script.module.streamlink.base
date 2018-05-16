@@ -6,6 +6,7 @@ from streamlink.plugin import Plugin
 from streamlink.stream import HLSStream
 
 from streamlink.plugin.api import http
+from streamlink.plugin.api import validate
 
 # URL to the RUV LIVE API
 RUV_LIVE_API = """http://www.ruv.is/sites/all/themes/at_ruv/scripts/\

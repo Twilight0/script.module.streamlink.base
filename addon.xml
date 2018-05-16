@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.02.24" provider-name="Twilight0">
+<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.05.16" provider-name="Twilight0">
   <requires>
     <import addon="xbmc.python" version="2.24.0"/>
     <import addon="script.module.requests" version="2.12.4"/>
@@ -18,9 +18,8 @@
       <icon>resources/icon.png</icon>
     </assets>
     <news>
-+ 2018.02.24
-- Fixed segmented module (ignore-names commit)
-- Bumped to commit #3b7dae75d924caa94d5d2e023b85959f0ac8ef39
++ 2018.05.16
+- Bumped to latest commit
     </news>
   </extension>
 </addon>

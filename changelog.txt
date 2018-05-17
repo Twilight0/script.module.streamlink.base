@@ -1,3 +1,7 @@
++ 2018.05.18
+- Bumped to latest commit
+- Tweaks in shutil which compat backport library
+
 + 2018.05.17
 - Bumped to latest commit
 - Fixes in which util

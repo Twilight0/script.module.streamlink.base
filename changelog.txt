@@ -1,3 +1,7 @@
++ 2018.05.21
+- Updates to plugins pulled from upstream
+- Removed _version module and replaced debug info of version with the one Kodi provides
+
 + 2018.05.18
 - Bumped to latest commit
 - Tweaks in shutil which compat backport library

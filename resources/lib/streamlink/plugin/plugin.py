@@ -1,4 +1,5 @@
 import ast
+import logging
 import operator
 import re
 
@@ -6,12 +7,11 @@ try:
     from collections import OrderedDict
 except ImportError:
     from streamlink.utils.ordereddict import OrderedDict
-
 from functools import partial
 
 from ..cache import Cache
 from ..exceptions import PluginError, NoStreamsError
-from ..options import Options
+from ..options import Options, Arguments
 
 # FIXME: This is a crude attempt at making a bitrate's
 # weight end up similar to the weight of a resolution.
@@ -168,13 +168,14 @@ class Plugin(object):
     logger = None
     module = "unknown"
     options = Options()
+    arguments = Arguments()
     session = None
 
     @classmethod
     def bind(cls, session, module):
         cls.cache = Cache(filename="plugin-cache.json",
                           key_prefix=module)
-        cls.logger = session.logger.new_module("plugin." + module)
+        cls.logger = logging.getLogger("streamlink.plugin." + module)
         cls.module = module
         cls.session = session
 
@@ -192,6 +193,10 @@ class Plugin(object):
     @classmethod
     def get_option(cls, key):
         return cls.options.get(key)
+
+    @classmethod
+    def get_argument(cls, key):
+        return cls.arguments.get(key)
 
     @classmethod
     def stream_weight(cls, stream):

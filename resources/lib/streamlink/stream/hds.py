@@ -1,5 +1,5 @@
 from __future__ import division
-
+import logging
 import base64
 import hmac
 import random
@@ -15,9 +15,7 @@ from io import BytesIO
 from math import ceil
 
 from .flvconcat import FLVTagConcat
-from .segmented import (SegmentedStreamReader,
-                        SegmentedStreamWriter,
-                        SegmentedStreamWorker)
+from .segmented import (SegmentedStreamReader, SegmentedStreamWriter, SegmentedStreamWorker)
 from .stream import Stream
 from .wrappers import StreamIOIterWrapper
 
@@ -30,6 +28,7 @@ from ..packages.flashmedia import F4V, F4VError
 from ..packages.flashmedia.box import Box
 from ..packages.flashmedia.tag import ScriptData, Tag, TAG_TYPE_SCRIPT
 
+log = logging.getLogger(__name__)
 # Akamai HD player verification key
 # Use unhexlify() rather than bytes.fromhex() for compatibility with before
 # Python 3. However, in Python 3.2 (not 3.3+), unhexlify only accepts a byte
@@ -61,9 +60,7 @@ class HDSStreamWriter(SegmentedStreamWriter):
             tags = [Tag(TAG_TYPE_SCRIPT, timestamp=0,
                         data=self.stream.metadata)]
 
-        self.concater = FLVTagConcat(tags=tags,
-                                     duration=duration,
-                                     flatten_timestamps=True)
+        self.concater = FLVTagConcat(tags=tags, duration=duration, flatten_timestamps=True)
 
     def fetch(self, fragment, retries=None):
         if self.closed or not retries:
@@ -73,15 +70,11 @@ class HDSStreamWriter(SegmentedStreamWriter):
             request_params = self.stream.request_params.copy()
             params = request_params.pop("params", {})
             params.pop("g", None)
-            return self.session.http.get(fragment.url,
-                                         stream=True,
-                                         timeout=self.timeout,
-                                         exception=StreamError,
-                                         params=params,
-                                         **request_params)
+            return self.session.http.get(
+                fragment.url, stream=True, timeout=self.timeout, exception=StreamError, params=params, **request_params
+            )
         except StreamError as err:
-            self.logger.error("Failed to open fragment {0}-{1}: {2}",
-                              fragment.segment, fragment.fragment, err)
+            log.error("Failed to open fragment {0}-{1}: {2}", fragment.segment, fragment.fragment, err)
             return self.fetch(fragment, retries - 1)
 
     def write(self, fragment, res, chunk_size=8192):
@@ -98,13 +91,11 @@ class HDSStreamWriter(SegmentedStreamWriter):
                     mdat = box.payload.data
                     break
         except F4VError as err:
-            self.logger.error("Failed to parse fragment {0}-{1}: {2}",
-                              fragment.segment, fragment.fragment, err)
+            log.error("Failed to parse fragment {0}-{1}: {2}", fragment.segment, fragment.fragment, err)
             return
 
         if not mdat:
-            self.logger.error("No MDAT box found in fragment {0}-{1}",
-                              fragment.segment, fragment.fragment)
+            log.error("No MDAT box found in fragment {0}-{1}", fragment.segment, fragment.fragment)
             return
 
         try:
@@ -114,17 +105,14 @@ class HDSStreamWriter(SegmentedStreamWriter):
                 if self.closed:
                     break
             else:
-                self.logger.debug("Download of fragment {0}-{1} complete",
-                                  fragment.segment, fragment.fragment)
+                log.debug("Download of fragment {0}-{1} complete", fragment.segment, fragment.fragment)
         except IOError as err:
             if "Unknown tag type" in str(err):
-                self.logger.error("Unknown tag type found, this stream is "
-                                  "probably encrypted")
+                log.error("Unknown tag type found, this stream is probably encrypted")
                 self.close()
                 return
 
-            self.logger.error("Error reading fragment {0}-{1}: {2}",
-                              fragment.segment, fragment.fragment, err)
+            log.error("Error reading fragment {0}-{1}: {2}", fragment.segment, fragment.fragment, err)
 
 
 class HDSStreamWorker(SegmentedStreamWorker):
@@ -146,7 +134,7 @@ class HDSStreamWorker(SegmentedStreamWorker):
         self.update_bootstrap()
 
     def update_bootstrap(self):
-        self.logger.debug("Updating bootstrap")
+        log.debug("Updating bootstrap")
 
         if isinstance(self.bootstrap, Box):
             bootstrap = self.bootstrap
@@ -180,8 +168,7 @@ class HDSStreamWorker(SegmentedStreamWorker):
                 current_fragment = max(self.first_fragment,
                                        current_fragment - (fragment_buffer - 1))
 
-                self.logger.debug("Live edge buffer {0} sec is {1} fragments",
-                                  self.live_edge, fragment_buffer)
+                log.debug("Live edge buffer {0} sec is {1} fragments", self.live_edge, fragment_buffer)
 
                 # Make sure we don't have a duration set when it's a
                 # live stream since it will just confuse players anyway.
@@ -191,17 +178,17 @@ class HDSStreamWorker(SegmentedStreamWorker):
 
             self.current_fragment = current_fragment
 
-        self.logger.debug("Current timestamp: {0}", self.timestamp / self.time_scale)
-        self.logger.debug("Current segment: {0}", self.current_segment)
-        self.logger.debug("Current fragment: {0}", self.current_fragment)
-        self.logger.debug("First fragment: {0}", self.first_fragment)
-        self.logger.debug("Last fragment: {0}", self.last_fragment)
-        self.logger.debug("End fragment: {0}", self.end_fragment)
+        log.debug("Current timestamp: {0}", self.timestamp / self.time_scale)
+        log.debug("Current segment: {0}", self.current_segment)
+        log.debug("Current fragment: {0}", self.current_fragment)
+        log.debug("First fragment: {0}", self.first_fragment)
+        log.debug("Last fragment: {0}", self.last_fragment)
+        log.debug("End fragment: {0}", self.end_fragment)
 
         self.bootstrap_reload_time = fragment_duration
 
         if self.live and not bootstrap_changed:
-            self.logger.debug("Bootstrap not changed, shortening timer")
+            log.debug("Bootstrap not changed, shortening timer")
             self.bootstrap_reload_time /= 2
 
         self.bootstrap_reload_time = max(self.bootstrap_reload_time,
@@ -215,11 +202,7 @@ class HDSStreamWorker(SegmentedStreamWorker):
 
     def fragment_url(self, segment, fragment):
         url = absolute_url(self.stream.baseurl, self.stream.url)
-        return FRAGMENT_URL.format(url=url,
-                                   segment=segment,
-                                   fragment=fragment,
-                                   identifier="",
-                                   quality="")
+        return FRAGMENT_URL.format(url=url, segment=segment, fragment=fragment, identifier="", quality="")
 
     def fragment_count(self):
         table = self.fragmentruntable.payload.fragment_run_entry_table
@@ -322,11 +305,9 @@ class HDSStreamWorker(SegmentedStreamWorker):
 
                 fragment_duration = int(self.fragment_duration(fragment) * 1000)
                 fragment_url = self.fragment_url(self.current_segment, fragment)
-                fragment = Fragment(self.current_segment, fragment,
-                                    fragment_duration, fragment_url)
+                fragment = Fragment(self.current_segment, fragment, fragment_duration, fragment_url)
 
-                self.logger.debug("Adding fragment {0}-{1} to queue",
-                                  fragment.segment, fragment.fragment)
+                log.debug("Adding fragment {0}-{1} to queue", fragment.segment, fragment.fragment)
                 yield fragment
 
                 # End of stream
@@ -338,7 +319,7 @@ class HDSStreamWorker(SegmentedStreamWorker):
                 try:
                     self.update_bootstrap()
                 except StreamError as err:
-                    self.logger.warning("Failed to update bootstrap: {0}", err)
+                    log.warning("Failed to update bootstrap: {0}", err)
 
 
 class HDSStreamReader(SegmentedStreamReader):
@@ -347,8 +328,6 @@ class HDSStreamReader(SegmentedStreamReader):
 
     def __init__(self, stream, *args, **kwargs):
         SegmentedStreamReader.__init__(self, stream, *args, **kwargs)
-
-        self.logger = stream.session.logger.new_module("stream.hds")
 
 
 class HDSStream(Stream):
@@ -397,12 +376,10 @@ class HDSStream(Stream):
         )
 
     def __repr__(self):
-        return ("<HDSStream({0!r}, {1!r}, {2!r},"
-                " metadata={3!r}, timeout={4!r})>").format(self.baseurl,
-                                                           self.url,
-                                                           self.bootstrap,
-                                                           self.metadata,
-                                                           self.timeout)
+
+        return (
+            "<HDSStream({0!r}, {1!r}, {2!r}," " metadata={3!r}, timeout={4!r})>"
+        ).format(self.baseurl, self.url, self.bootstrap, self.metadata, self.timeout)
 
     def __json__(self):
         if isinstance(self.bootstrap, Box):
@@ -434,7 +411,6 @@ class HDSStream(Stream):
         :param is_akamai: force adding of the akamai parameters
         :param pvswf: URL of player SWF for Akamai HD player verification.
         """
-        logger = session.logger.new_module("hds.parse_manifest")
         # private argument, should only be used in recursive calls
         raise_for_drm = request_params.pop("raise_for_drm", False)
 
@@ -459,10 +435,10 @@ class HDSStream(Stream):
                                     exception=IOError)
 
         if manifest.findtext("drmAdditionalHeader"):
-            logger.debug("Omitting HDS stream protected by DRM: {}", url)
+            log.debug("Omitting HDS stream protected by DRM: {}", url)
             if raise_for_drm:
                 raise PluginError("{} is protected by DRM".format(url))
-            logger.warning("Some or all streams are unavailable as they are protected by DRM")
+            log.warning("Some or all streams are unavailable as they are protected by DRM")
             return {}
 
         parsed = urlparse(url)
@@ -561,7 +537,7 @@ class HDSStream(Stream):
 
                     streams[name] = stream
         if child_drm:
-            logger.warning("Some or all streams are unavailable as they are protected by DRM")
+            log.warning("Some or all streams are unavailable as they are protected by DRM")
 
         return streams
 

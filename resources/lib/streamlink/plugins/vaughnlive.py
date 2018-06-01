@@ -1,11 +1,12 @@
+import itertools
+import logging
 import random
 import re
-import itertools
 import ssl
 from streamlink.utils import websocket
 
 from streamlink.plugin import Plugin
-from streamlink.plugin.api import useragents, http
+from streamlink.plugin.api import useragents
 from streamlink.stream import RTMPStream
 
 _url_re = re.compile(r"""
@@ -19,7 +20,7 @@ _url_re = re.compile(r"""
 class VLWebSocket(websocket.WebSocket):
     def __init__(self, **_):
         self.session = _.pop("session")
-        self.logger = self.session.logger.new_module("plugins.vaughnlive.websocket")
+        self.logger = logging.getLogger("streamlink.plugins.vaughnlive.websocket")
         sslopt = _.pop("sslopt", {})
         sslopt["cert_reqs"] = ssl.CERT_NONE
         super(VLWebSocket, self).__init__(sslopt=sslopt, **_)
@@ -34,8 +35,7 @@ class VLWebSocket(websocket.WebSocket):
 
 
 class VaughnLive(Plugin):
-    servers = ["wss://sapi-ws-{0}x{1:02}.vaughnlive.tv".format(x, y) for x, y in itertools.product(range(1, 3),
-                                                                                                   range(1, 6))]
+    servers = ["wss://sapi-ws-{0}x{1:02}.vaughnlive.tv".format(x, y) for x, y in itertools.product(range(1, 3), range(1, 6))]
     origin = "https://vaughnlive.tv"
     rtmp_server_map = {
         "594140c69edad": "192.240.105.171:1935",

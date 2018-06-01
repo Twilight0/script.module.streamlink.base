@@ -18,9 +18,7 @@ class Vidio(Plugin):
 
     csrf_tokens_url = "https://www.vidio.com/csrf_tokens"
     tokens_url = "https://www.vidio.com/live/{id}/tokens"
-    token_schema = validate.Schema(validate.transform(parse_json),
-                                   {"token": validate.text},
-                                   validate.get("token"))
+    token_schema = validate.Schema(validate.transform(parse_json), {"token": str}, validate.get("token"))
 
     @classmethod
     def can_handle_url(cls, url):
@@ -53,9 +51,9 @@ class Vidio(Plugin):
         if hls_url:
             self.logger.debug("HLS URL: {0}".format(hls_url))
             self.logger.debug("Tokens: {0}".format(tokens))
-            return HLSStream.parse_variant_playlist(self.session, hls_url+"?"+tokens,
-                                                    headers={"User-Agent": useragents.CHROME,
-                                                             "Referer": self.url})
+            return HLSStream.parse_variant_playlist(
+                self.session, hls_url+"?"+tokens, headers={"User-Agent": useragents.CHROME, "Referer": self.url}
+            )
 
 
 __plugin__ = Vidio

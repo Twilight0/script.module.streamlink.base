@@ -1,6 +1,7 @@
 import json
 import re
 import zlib
+import functools
 
 try:
     import xml.etree.cElementTree as ET
@@ -77,7 +78,7 @@ def parse_xml(data, name="XML", ignore_ns=False, exception=PluginError, schema=N
     """
     if is_py2 and isinstance(data, unicode):
         data = data.encode("utf8")
-    elif is_py3:
+    elif is_py3 and isinstance(data, str):
         data = bytearray(data, "utf8")
 
     if ignore_ns:
@@ -158,7 +159,8 @@ def update_scheme(current, target):
         return target
 
 
-def url_equal(first, second, ignore_scheme=False, ignore_netloc=False, ignore_path=False, ignore_params=False, ignore_query=False, ignore_fragment=False):
+def url_equal(first, second, ignore_scheme=False, ignore_netloc=False, ignore_path=False, ignore_params=False,
+              ignore_query=False, ignore_fragment=False):
     """
     Compare two URLs and return True if they are equal, some parts of the URLs can be ignored
     :param first: URL
@@ -182,6 +184,18 @@ def url_equal(first, second, ignore_scheme=False, ignore_netloc=False, ignore_pa
             (firstp.params == secondp.params or ignore_params) and
             (firstp.query == secondp.query or ignore_query) and
             (firstp.fragment == secondp.fragment or ignore_fragment))
+
+
+def memoize(obj):
+    cache = obj.cache = {}
+
+    @functools.wraps(obj)
+    def memoizer(*args, **kwargs):
+        key = str(args) + str(kwargs)
+        if key not in cache:
+            cache[key] = obj(*args, **kwargs)
+        return cache[key]
+    return memoizer
 
 
 #####################################
@@ -283,7 +297,7 @@ def escape_librtmp(value):
     return value
 
 
-__all__ = ["urlopen", "urlget", "urlresolve", "swfdecompress", "swfverify",
-           "verifyjson", "absolute_url", "parse_qsd", "parse_json", "res_json",
-           "parse_xml", "res_xml", "rtmpparse", "prepend_www", "NamedPipe",
-           "escape_librtmp"]
+__all__ = [
+    "urlopen", "urlget", "urlresolve", "swfdecompress", "swfverify", "verifyjson", "absolute_url", "parse_qsd",
+    "parse_json", "res_json", "parse_xml", "res_xml", "rtmpparse", "prepend_www", "NamedPipe", "escape_librtmp"
+]

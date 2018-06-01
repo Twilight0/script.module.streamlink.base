@@ -1,3 +1,9 @@
++ 2018.06.01
+- Bumped to commit d653d56
+- MPEG-DASH support added
+- New logging system
+- Various updates to plugins
+
 + 2018.05.21
 - Updates to plugins pulled from upstream
 - Removed _version module and replaced debug info of version with the one Kodi provides

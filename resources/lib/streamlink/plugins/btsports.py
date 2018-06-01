@@ -3,7 +3,7 @@ import time
 from uuid import uuid4
 
 from streamlink.compat import quote
-from streamlink.plugin import Plugin, PluginOptions
+from streamlink.plugin import Plugin, PluginArguments, PluginArgument
 from streamlink.plugin.api import http, useragents
 from streamlink.stream import HLSStream
 from streamlink.utils import url_equal
@@ -11,10 +11,22 @@ from streamlink.utils import url_equal
 
 class BTSports(Plugin):
     url_re = re.compile(r"https?://sport.bt.com")
-    options = PluginOptions({
-        "username": None,
-        "password": None
-    })
+
+    arguments = PluginArguments(
+        PluginArgument(
+            "email",
+            requires=["password"],
+            metavar="EMAIL",
+            required=True,
+            help="The email associated with your BT Sport account, required to access any BT Sport stream."
+        ),
+        PluginArgument(
+            "password",
+            sensitive=True,
+            metavar="PASSWORD",
+            help="Your BT Sport account password."
+        )
+    )
 
     content_re = re.compile(r"CONTENT_(\w+)\s*=\s*'(\w+)'")
     saml_re = re.compile(r'''name="SAMLResponse" value="(.*?)"''', re.M | re.DOTALL)
@@ -105,7 +117,8 @@ class BTSports(Plugin):
                     if data['resultCode'] == 'OK':
                         return HLSStream.parse_variant_playlist(self.session, data['resultObj']['src'])
                     else:
-                        self.logger.error("Failed to get stream with error: {0} - {1}".format(data['errorDescription'], data['message']))
+                        self.logger.error("Failed to get stream with error: {0} - {1}".format(data['errorDescription'],
+                                                                                              data['message']))
         else:
             self.logger.error("A username and password is required to use BT Sports")
 

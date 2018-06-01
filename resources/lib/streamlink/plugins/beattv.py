@@ -1,3 +1,4 @@
+import logging
 import re
 
 from collections import namedtuple
@@ -10,9 +11,7 @@ except ImportError:
 
 from streamlink.compat import range
 from streamlink.exceptions import StreamError
-from streamlink.packages.flashmedia.tag import (
-    AACAudioData, AudioData, AVCVideoData, RawData, Tag, VideoData
-)
+from streamlink.packages.flashmedia.tag import (AACAudioData, AudioData, AVCVideoData, RawData, Tag, VideoData)
 from streamlink.packages.flashmedia.tag import (
     AAC_PACKET_TYPE_RAW, AAC_PACKET_TYPE_SEQUENCE_HEADER,
     AUDIO_BIT_RATE_16, AUDIO_CODEC_ID_AAC, AUDIO_RATE_44_KHZ, AUDIO_TYPE_STEREO,
@@ -237,7 +236,7 @@ class BeatStreamReader(SegmentedStreamReader):
     __writer__ = BeatStreamWriter
 
     def __init__(self, stream, *args, **kwargs):
-        self.logger = stream.session.logger.new_module("stream.beat")
+        self.logger = logging.getLogger("streamlink.stream.beat")
 
         SegmentedStreamReader.__init__(self, stream, *args, **kwargs)
 

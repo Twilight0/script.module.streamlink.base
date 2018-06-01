@@ -2,7 +2,7 @@ import re
 import sys
 import time
 
-from streamlink.plugin import Plugin, PluginOptions
+from streamlink.plugin import Plugin, PluginArguments, PluginArgument
 from streamlink.plugin.api import http, validate
 from streamlink.stream import HDSStream, HLSStream, HTTPStream
 from streamlink.stream.ffmpegmux import MuxedStream
@@ -78,9 +78,12 @@ class Pluzz(Plugin):
 
     _player_schema = validate.Schema({'result': validate.url()})
 
-    options = PluginOptions({
-        "mux_subtitles": False
-    })
+    arguments = PluginArguments(
+        PluginArgument(
+            "mux-subtitles", action="store_true",
+            help="""Automatically mux available subtitles in to the output stream."""
+        )
+    )
 
     @classmethod
     def can_handle_url(cls, url):
@@ -157,7 +160,7 @@ class Pluzz(Plugin):
             if '.mpd' in video_url:
                 continue
 
-            if '.f4m' in video_url or 'france.tv' in self.url:
+            if ('.f4m' in video_url or 'france.tv' in self.url or 'sport.francetvinfo.fr' in self.url):
                 res = http.get(self.TOKEN_URL.format(video_url))
                 video_url = res.text
 

@@ -22,5 +22,4 @@ class StreamError(StreamlinkError):
     """Stream related error."""
 
 
-__all__ = ["StreamlinkError", "PluginError", "NoPluginError",
-           "NoStreamsError", "StreamError"]
+__all__ = ["StreamlinkError", "PluginError", "NoPluginError", "NoStreamsError", "StreamError"]

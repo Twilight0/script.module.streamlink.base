@@ -1,3 +1,8 @@
++ 2018.06.03
+- Bumped to commit d653d56
+- Updated facebook plugin to support DASH
+- Improved DASH
+
 + 2018.06.01
 - Bumped to commit d653d56
 - MPEG-DASH support added

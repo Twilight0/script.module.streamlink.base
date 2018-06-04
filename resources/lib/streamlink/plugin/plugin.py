@@ -317,9 +317,7 @@ class Plugin(object):
             stream_types = self.default_stream_types(ostreams)
 
         # Add streams depending on stream type and priorities
-        sorted_streams = sorted(iterate_streams(ostreams),
-                                key=partial(stream_type_priority,
-                                            stream_types))
+        sorted_streams = sorted(iterate_streams(ostreams), key=partial(stream_type_priority, stream_types))
 
         streams = {}
         for name, stream in sorted_streams:
@@ -363,8 +361,7 @@ class Plugin(object):
 
         # Create the best/worst synonmys
         def stream_weight_only(s):
-            return (self.stream_weight(s)[0] or
-                    (len(streams) == 1 and 1))
+            return (self.stream_weight(s)[0] or (len(streams) == 1 and 1))
 
         stream_names = filter(stream_weight_only, streams.keys())
         sorted_streams = sorted(stream_names, key=stream_weight_only)

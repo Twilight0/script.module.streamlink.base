@@ -4,19 +4,16 @@ import shutil
 import tempfile
 
 from time import time
-"""
-from .compat import is_win32
 
+# from .compat import is_win32
+#
+#
+# if is_win32:
+#     xdg_cache = os.environ.get("APPDATA", os.path.expanduser("~"))
+# else:
+#     xdg_cache = os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
 
-if is_win32:
-    xdg_cache = os.environ.get("APPDATA",
-                               os.path.expanduser("~"))
-else:
-    xdg_cache = os.environ.get("XDG_CACHE_HOME",
-                               os.path.expanduser("~/.cache"))
-"""
-import xbmc
-import xbmcvfs
+import xbmc, xbmcvfs
 
 xdg_cache = xbmc.translatePath('special://profile/addon_data/script.module.streamlink.base').encode('utf-8')
 
@@ -102,6 +99,24 @@ class Cache(object):
             return self._cache[key]["value"]
         else:
             return default
+
+    def get_all(self):
+        ret = {}
+        self._load()
+
+        if self._prune():
+            self._save()
+
+        for key, value in self._cache.items():
+            if self.key_prefix:
+                prefix = self.key_prefix + ":"
+            else:
+                prefix = ""
+            if key.startswith(prefix):
+                okey = key[len(prefix):]
+                ret[okey] = value["value"]
+
+        return ret
 
 
 __all__ = ["Cache"]

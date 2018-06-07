@@ -216,4 +216,3 @@ def singledispatch(func):
     wrapper._clear_cache = dispatch_cache.clear
     update_wrapper(wrapper, func)
     return wrapper
-

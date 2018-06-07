@@ -1,3 +1,8 @@
++ 2018.06.07
+- Upstream release 0.13.0
+- Fixes to maintain python 2.6.X support (e.g. Kodi Jarvis on Android)
+- Updated youtube plugin to include custom API key option and the fallback to plain html if quota reached
+
 + 2018.06.04
 - Updated facebook plugin to support VOD
 

@@ -33,8 +33,7 @@ log = logging.getLogger(__name__)
 # Use unhexlify() rather than bytes.fromhex() for compatibility with before
 # Python 3. However, in Python 3.2 (not 3.3+), unhexlify only accepts a byte
 # string.
-AKAMAIHD_PV_KEY = unhexlify(
-    b"BD938D5EE6D9F42016F9C56577B6FDCF415FE4B184932B785AB32BCADC9BB592")
+AKAMAIHD_PV_KEY = unhexlify(b"BD938D5EE6D9F42016F9C56577B6FDCF415FE4B184932B785AB32BCADC9BB592")
 
 # Some streams hosted by Akamai seem to require a hdcore parameter
 # to function properly.
@@ -47,6 +46,7 @@ Fragment = namedtuple("Fragment", "segment fragment duration url")
 
 
 class HDSStreamWriter(SegmentedStreamWriter):
+
     def __init__(self, reader, *args, **kwargs):
         options = reader.stream.session.options
         kwargs["retries"] = options.get("hds-segment-attempts")
@@ -57,8 +57,7 @@ class HDSStreamWriter(SegmentedStreamWriter):
         duration, tags = None, []
         if self.stream.metadata:
             duration = self.stream.metadata.value.get("duration")
-            tags = [Tag(TAG_TYPE_SCRIPT, timestamp=0,
-                        data=self.stream.metadata)]
+            tags = [Tag(TAG_TYPE_SCRIPT, timestamp=0, data=self.stream.metadata)]
 
         self.concater = FLVTagConcat(tags=tags, duration=duration, flatten_timestamps=True)
 
@@ -70,9 +69,11 @@ class HDSStreamWriter(SegmentedStreamWriter):
             request_params = self.stream.request_params.copy()
             params = request_params.pop("params", {})
             params.pop("g", None)
+
             return self.session.http.get(
                 fragment.url, stream=True, timeout=self.timeout, exception=StreamError, params=params, **request_params
             )
+
         except StreamError as err:
             log.error("Failed to open fragment {0}-{1}: {2}", fragment.segment, fragment.fragment, err)
             return self.fetch(fragment, retries - 1)
@@ -223,8 +224,7 @@ class HDSStreamWorker(SegmentedStreamWorker):
                                  fragmentrun.fragment_duration)
 
             if self.timestamp > fragment_duration:
-                offset = ((self.timestamp - fragment_duration) /
-                          fragmentrun.fragment_duration)
+                offset = ((self.timestamp - fragment_duration) / fragmentrun.fragment_duration)
                 end_fragment += int(offset)
 
         if first_fragment is None:
@@ -378,7 +378,7 @@ class HDSStream(Stream):
     def __repr__(self):
 
         return (
-            "<HDSStream({0!r}, {1!r}, {2!r}," " metadata={3!r}, timeout={4!r})>"
+            "<HDSStream({0!r}, {1!r}, {2!r}, metadata={3!r}, timeout={4!r})>"
         ).format(self.baseurl, self.url, self.bootstrap, self.metadata, self.timeout)
 
     def __json__(self):
@@ -392,8 +392,10 @@ class HDSStream(Stream):
         else:
             metadata = self.metadata
 
-        return dict(type=HDSStream.shortname(), baseurl=self.baseurl,
-                    url=self.url, bootstrap=bootstrap, metadata=metadata)
+        return dict(
+            type=HDSStream.shortname(), baseurl=self.baseurl, url=self.url, bootstrap=bootstrap, metadata=metadata,
+            params=self.request_params.get("params", {}), headers=self.request_params.get("headers", {})
+        )
 
     def open(self):
         reader = HDSStreamReader(self)

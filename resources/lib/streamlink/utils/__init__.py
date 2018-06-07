@@ -118,8 +118,7 @@ def parse_qsd(data, name="query string", exception=PluginError, schema=None, **p
 
 def rtmpparse(url):
     parse = urlparse(url)
-    netloc = "{hostname}:{port}".format(hostname=parse.hostname,
-                                        port=parse.port or 1935)
+    netloc = "{hostname}:{port}".format(hostname=parse.hostname, port=parse.port or 1935)
     split = list(filter(None, parse.path.split("/")))
     playpath = None
     if len(split) > 2:
@@ -150,11 +149,9 @@ def update_scheme(current, target):
     """
     target_p = urlparse(target)
     if not target_p.scheme and target_p.netloc:
-        return "{0}:{1}".format(urlparse(current).scheme,
-                                urlunparse(target_p))
+        return "{0}:{1}".format(urlparse(current).scheme, urlunparse(target_p))
     elif not target_p.scheme and not target_p.netloc:
-        return "{0}://{1}".format(urlparse(current).scheme,
-                                  urlunparse(target_p))
+        return "{0}://{1}".format(urlparse(current).scheme, urlunparse(target_p))
     else:
         return target
 

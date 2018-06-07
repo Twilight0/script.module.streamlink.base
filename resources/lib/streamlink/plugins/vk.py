@@ -7,6 +7,7 @@ from streamlink.stream import HTTPStream, HLSStream
 
 
 class VK(Plugin):
+
     _url_re = re.compile(r"http(?:s)?://(\w+\.)?vk.com/video-[0-9]*_[0-9]*")
     _url_catalog_re = re.compile(r"http(?:s)?://(\w+\.)?vk.com/videos-[0-9]*")
     _livestream_sources_re = re.compile(r"<source src=\\\"(.*?)\\\" type=\\\"application\\\/vnd\.apple\.mpegurl\\\">")
@@ -27,7 +28,7 @@ class VK(Plugin):
         parsed_url = urlparse(url)
         if parsed_url.path.startswith('/videos-'):
             # try:
-            query = dict((v[0], v[1] for v in [q.split('=') for q in parsed_url.query.split('&')] if v[0] == 'z'))
+            query = dict((v[0], v[1]) for v in [q.split('=') for q in parsed_url.query.split('&')] if v[0] == 'z')
             # except Exception:
             #     query = {v[0]: v[1] for v in [q.split('=') for q in parsed_url.query.split('&')] if v[0] == 'z'}
             try:

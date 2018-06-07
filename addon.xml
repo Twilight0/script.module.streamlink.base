@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.06.07" provider-name="Streamlink Devs, Twilight0">
+<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.06.08" provider-name="Streamlink Devs, Twilight0">
   <requires>
     <import addon="xbmc.python" version="2.24.0"/>
     <import addon="script.module.requests" version="2.12.4"/>
@@ -18,6 +18,10 @@
       <icon>resources/icon.png</icon>
     </assets>
     <news>+ 2018.06.07
+- vk.ru plugin fixes
+- Instructions on how to get MPEG-DASH url added to README
+
++ 2018.06.07
 - Upstream release 0.13.0
 - Fixes to maintain python 2.6.X support (e.g. Kodi Jarvis on Android)
 - Updated youtube plugin to include custom API key option and the fallback to plain html if quota reached</news>

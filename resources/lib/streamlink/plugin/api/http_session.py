@@ -156,12 +156,9 @@ class HTTPSession(Session):
 
         while True:
             try:
-                res = Session.request(self, method, url,
-                                      headers=headers,
-                                      params=params,
-                                      timeout=timeout,
-                                      proxies=proxies,
-                                      *args, **kwargs)
+                res = Session.request(
+                    self, method, url, headers=headers, params=params, timeout=timeout, proxies=proxies, *args, **kwargs
+                )
                 if raise_for_status and res.status_code not in acceptable_status:
                     res.raise_for_status()
                 break

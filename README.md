@@ -15,7 +15,10 @@ Add this to your repository xml in order to pull updates:
 
     import streamlink
     streams = streamlink.streams("https://www.youtube.com/watch?v=XIMLoLxmTDw")
-    url = streams.['best'].url
+    try:
+        url = streams.['best'].url
+    except AttributeError:
+        url = streams.['best'].to_url()  # You can get DASH streams' urls this way
 
 Where url can be passed into the player:
 
@@ -38,7 +41,10 @@ If an error occurs while fetching streams, a **PluginError** will be raised.
             # session.set_option("rtmp-rtmpdump", "/path/to/rtmpdump")
             plugin = session.resolve_url(url)
             streams = plugin.get_streams()
-            playable_link = streams.[quality].url
+            try:
+                playable_link = streams.[quality].url
+            except AttributeError:
+                playable_link = streams.[quality].to_url()
 
             return playable_link
 

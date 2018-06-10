@@ -9,7 +9,7 @@ from functools import partial
 try:
     from collections import OrderedDict
 except ImportError:
-    from streamlink.utils.ordereddict import OrderedDict
+    from streamlink.packages.flashmedia.ordereddict import OrderedDict
 
 from streamlink.cache import Cache
 from streamlink.exceptions import PluginError, NoStreamsError

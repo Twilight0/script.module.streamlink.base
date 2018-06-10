@@ -1,5 +1,7 @@
 # script.module.streamlink.base
 
+_Streamlink library packed for Kodi:_[Upstream link](https://github.com/streamlink/streamlink)
+
 You can install it from [repository.twilight0.libs](https://github.com/Twilight0/repo.twilight0.libs)
 
 Add this to your repository xml in order to pull updates:
@@ -15,10 +17,7 @@ Add this to your repository xml in order to pull updates:
 
     import streamlink
     streams = streamlink.streams("https://www.youtube.com/watch?v=XIMLoLxmTDw")
-    try:
-        url = streams.['best'].url
-    except AttributeError:
-        url = streams.['best'].to_url()  # You can get DASH streams' urls this way
+    url = streams.['best'].to_url()
 
 Where url can be passed into the player:
 
@@ -38,13 +37,9 @@ If an error occurs while fetching streams, a **PluginError** will be raised.
         try:
 
             session = streamlink.session.Streamlink()
-            # session.set_option("rtmp-rtmpdump", "/path/to/rtmpdump")
             plugin = session.resolve_url(url)
             streams = plugin.get_streams()
-            try:
-                playable_link = streams.[quality].url
-            except AttributeError:
-                playable_link = streams.[quality].to_url()
+            playable_link = streams.[quality].to_url()
 
             return playable_link
 

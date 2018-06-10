@@ -1,3 +1,8 @@
++ 2018.06.10
+- Various plugin updates
+- Added issue template
+- Improved README
+
 + 2018.06.07
 - vk.ru plugin bug fix
 - Instructions on how to get MPEG-DASH url added to README

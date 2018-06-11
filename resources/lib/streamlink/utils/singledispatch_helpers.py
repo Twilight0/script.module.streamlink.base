@@ -16,7 +16,7 @@ except ImportError:
 try:
     from collections import OrderedDict
 except ImportError:
-    from .ordereddict import OrderedDict
+    from streamlink.utils.ordereddict import OrderedDict
 try:
     from thread import get_ident
 except ImportError:

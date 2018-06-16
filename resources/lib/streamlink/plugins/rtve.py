@@ -4,6 +4,7 @@ from functools import partial
 
 from Crypto.Cipher import Blowfish
 
+from streamlink import PluginError
 from streamlink.compat import bytes, is_py3
 from streamlink.plugin import Plugin, PluginArguments, PluginArgument
 from streamlink.plugin.api import http

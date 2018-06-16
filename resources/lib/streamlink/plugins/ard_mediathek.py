@@ -117,8 +117,7 @@ class ard_mediathek(Plugin):
                     for s in parser(stream):
                         yield s
                 except IOError as err:
-                    self.logger.error("Failed to extract {0} streams: {1}",
-                                      parser_name, err)
+                    self.logger.error("Failed to extract {0} streams: {1}", parser_name, err)
 
 
 __plugin__ = ard_mediathek

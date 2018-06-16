@@ -43,4 +43,5 @@ class HDSPlugin(Plugin):
 
         return HDSStream.parse_manifest(self.session, urlnoproto, **params)
 
+
 __plugin__ = HDSPlugin

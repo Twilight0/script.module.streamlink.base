@@ -35,10 +35,7 @@ class BTSports(Plugin):
     login_url = "https://signin1.bt.com/siteminderagent/forms/login.fcc"
 
     def __init__(self, url):
-        try:
-            super().__init__(url)
-        except SyntaxError:
-            super(BTSports, self).__init__(url)
+        super(BTSports, self).__init__(url)
         http.headers = {"User-Agent": useragents.FIREFOX}
 
     @classmethod
@@ -77,8 +74,9 @@ class BTSports(Plugin):
                 fed_json = http.json(res)
                 success = fed_json['resultCode'] == "OK"
                 if not success:
-                    self.logger.error("Failed to login: {0} - {1}".format(fed_json['errorDescription'],
-                                                                          fed_json['message']))
+                    self.logger.error(
+                        "Failed to login: {0} - {1}".format(fed_json['errorDescription'], fed_json['message'])
+                    )
                 return success
         return False
 

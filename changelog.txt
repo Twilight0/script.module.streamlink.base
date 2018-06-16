@@ -1,3 +1,6 @@
++ 2018.06.12
+- Plugins clean up and updates
+
 + 2018.06.10
 - Various plugin updates
 - Added issue template

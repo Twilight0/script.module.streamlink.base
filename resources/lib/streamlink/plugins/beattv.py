@@ -251,8 +251,7 @@ class BeatStream(Stream):
         self.quality = quality
 
     def __repr__(self):
-        return ("<BeatStream({0!r}, {1!r}>").format(len(self.parts),
-                                                    self.quality)
+        return ("<BeatStream({0!r}, {1!r}>").format(len(self.parts), self.quality)
 
     def __json__(self):
         return dict(parts=self.parts, quality=self.quality,

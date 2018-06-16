@@ -10,7 +10,6 @@ from streamlink.utils import update_scheme
 
 
 class Pluzz(Plugin):
-
     GEO_URL = 'http://geo.francetv.fr/ws/edgescape.json'
     API_URL = 'http://sivideo.webservices.francetelevisions.fr/tools/getInfosOeuvre/v2/?idDiffusion={0}'
     PLAYER_GENERATOR_URL = 'https://sivideo.webservices.francetelevisions.fr/assets/staticmd5/getUrl?id=jquery.player.7.js'

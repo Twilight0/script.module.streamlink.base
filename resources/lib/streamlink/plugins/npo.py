@@ -46,8 +46,11 @@ class NPO(Plugin):
     ))
     arguments = PluginArguments(
         PluginArgument(
-            "subtitles", action="store_true",
-            help="Include subtitles for the deaf or hard of hearing, if available."
+            "subtitles",
+            action="store_true",
+            help="""
+        Include subtitles for the deaf or hard of hearing, if available.
+        """
         )
     )
 

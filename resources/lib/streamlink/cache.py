@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 
-from time import time
+from time import time, mktime
 
 # from .compat import is_win32
 #
@@ -74,7 +74,7 @@ class Cache(object):
         except (IOError, OSError):
             os.remove(tempname)
 
-    def set(self, key, value, expires=60 * 60 * 24 * 7):
+    def set(self, key, value, expires=60 * 60 * 24 * 7, expires_at=None):
         self._load()
         self._prune()
 
@@ -82,6 +82,9 @@ class Cache(object):
             key = "{0}:{1}".format(self.key_prefix, key)
 
         expires += time()
+
+        if expires_at:
+            expires = mktime(expires_at.timetuple())
 
         self._cache[key] = dict(value=value, expires=expires)
         self._save()

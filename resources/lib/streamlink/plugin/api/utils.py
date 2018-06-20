@@ -7,8 +7,11 @@ from ...utils import parse_qsd as parse_query, parse_json, parse_xml
 __all__ = ["parse_json", "parse_xml", "parse_query"]
 
 
-tag_re = re.compile('''(?=<(?P<tag>[a-zA-Z]+)(?P<attr>.*?)(?P<end>/)?>(?:(?P<inner>.*?)</\s*(?P=tag)\s*>)?)''',
-                    re.MULTILINE | re.DOTALL)
+tag_re = re.compile(
+    '''(?=<(?P<tag>[a-zA-Z]+)(?P<attr>.*?)(?P<end>/)?>(?:(?P<inner>.*?)</\s*(?P=tag)\s*>)?)''',
+    re.MULTILINE | re.DOTALL
+)
+
 attr_re = re.compile('''\s*(?P<key>[\w-]+)\s*(?:=\s*(?P<quote>["']?)(?P<value>.*?)(?P=quote)\s*)?''')
 Tag = namedtuple("Tag", "tag attributes text")
 
@@ -23,8 +26,5 @@ def itertags(html, tag):
     """
     for match in tag_re.finditer(html):
         if match.group("tag") == tag:
-            # try:
             attrs = dict((a.group("key").lower(), a.group("value")) for a in attr_re.finditer(match.group("attr")))
-            # except Exception:
-            #     attrs = {a.group("key").lower(): a.group("value") for a in attr_re.finditer(match.group("attr"))}
             yield Tag(match.group("tag"), attrs, match.group("inner"))

@@ -47,7 +47,6 @@ class OneTV(Plugin):
         res = http.get(update_scheme(self.url, self._session_api))
         data = http.json(res)
         # the values are already quoted, we don't want them quoted
-        # return {k: unquote(v) for k, v in data.items()}
         return dict((k, unquote(v)) for k, v in data.items())
 
     @property

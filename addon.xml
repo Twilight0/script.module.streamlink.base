@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.06.12.1" provider-name="Streamlink Devs, Twilight0">
+<addon id="script.module.streamlink.base" name="Streamlink Library" version="2018.06.20" provider-name="Streamlink Devs, Twilight0">
   <requires>
     <import addon="xbmc.python" version="2.24.0"/>
     <import addon="script.module.requests" version="2.12.4"/>
@@ -14,10 +14,11 @@
     <license>Simplified BSD</license>
     <source>https://github.com/Twilight0/script.module.streamlink.base/</source>
     <language>en</language>
-    <assets>
-      <icon>resources/icon.png</icon>
-    </assets>
-    <news>+ 2018.06.12
-- Plugins clean up and updates</news>
+    <!--<assets>-->
+      <!--<icon>resources/icon.png</icon>-->
+    <!--</assets>-->
+    <news>+ 2018.06.20
+- Plugins updates
+- Various cosmetics</news>
   </extension>
 </addon>

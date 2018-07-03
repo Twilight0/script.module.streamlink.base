@@ -6,14 +6,13 @@ import time
 import requests.cookies
 
 from functools import partial
-try:
-    from collections import OrderedDict
-except ImportError:
-    from streamlink.packages.flashmedia.ordereddict import OrderedDict
+from streamlink.compat import OrderedDict
 
 from streamlink.cache import Cache
-from streamlink.exceptions import PluginError, NoStreamsError
+from streamlink.exceptions import PluginError, NoStreamsError, FatalPluginError
 from streamlink.options import Options, Arguments
+
+log = logging.getLogger(__name__)
 
 # FIXME: This is a crude attempt at making a bitrate's
 # weight end up similar to the weight of a resolution.
@@ -57,7 +56,7 @@ def stream_weight(stream):
         if stream in weights:
             return weights[stream], group
 
-    match = re.match(r"^(\d+)(k|p)?(\d+)?(\+)?(?:_(\d+)k)?(?:_(alt)(\d)?)?$", stream)
+    match = re.match(r"^(\d+)([kp])?(\d+)?(\+)?(?:[a_](\d+)k)?(?:_(alt)(\d)?)?$", stream)
 
     if match:
         weight = 0
@@ -158,6 +157,33 @@ def parse_params(params):
     return rval
 
 
+class UserInputRequester(object):
+    """
+    Base Class / Interface for requesting user input
+
+    eg. From the console
+    """
+    def ask(self, prompt):
+        """
+        Ask the user for a text input, the input is not sensitive
+        and can be echoed to the user
+
+        :param prompt: message to display when asking for the input
+        :return: the value the user input
+        """
+        raise NotImplementedError
+
+    def ask_password(self, prompt):
+        """
+        Ask the user for a text input, the input _is_ sensitive
+        and should be masked as the user gives the input
+
+        :param prompt: message to display when asking for the input
+        :return: the value the user input
+        """
+        raise NotImplementedError
+
+
 class Plugin(object):
     """A plugin can retrieve stream information from the URL specified.
 
@@ -170,14 +196,19 @@ class Plugin(object):
     options = Options()
     arguments = Arguments()
     session = None
+    _user_input_requester = None
 
     @classmethod
-    def bind(cls, session, module):
-        cls.cache = Cache(filename="plugin-cache.json",
-                          key_prefix=module)
+    def bind(cls, session, module, user_input_requester=None):
+        cls.cache = Cache(filename="plugin-cache.json", key_prefix=module)
         cls.logger = logging.getLogger("streamlink.plugin." + module)
         cls.module = module
         cls.session = session
+        if user_input_requester is not None:
+            if isinstance(user_input_requester, UserInputRequester):
+                cls._user_input_requester = user_input_requester
+            else:
+                raise RuntimeError("user-input-requester must be an instance of UserInputRequester")
 
     def __init__(self, url):
         self.url = url
@@ -482,6 +513,26 @@ class Plugin(object):
                     removed.append(key)
 
         return removed
+
+    def input_ask(self, prompt):
+        if self._user_input_requester:
+            try:
+                return self._user_input_requester.ask(prompt)
+            except IOError as e:
+                raise FatalPluginError("User input error: {0}".format(e))
+            except NotImplementedError:  # ignore this and raise a FatalPluginError
+                pass
+        raise FatalPluginError("This plugin requires user input, however it is not supported on this platform")
+
+    def input_ask_password(self, prompt):
+        if self._user_input_requester:
+            try:
+                return self._user_input_requester.ask_password(prompt)
+            except IOError as e:
+                raise FatalPluginError("User input error: {0}".format(e))
+            except NotImplementedError:  # ignore this and raise a FatalPluginError
+                pass
+        raise FatalPluginError("This plugin requires user input, however it is not supported on this platform")
 
 
 __all__ = ["Plugin"]

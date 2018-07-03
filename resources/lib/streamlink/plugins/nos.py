@@ -1,4 +1,5 @@
 """Plugin for NOS: Nederlandse Omroep Stichting
+
 Supports:
    MP$: http://nos.nl/uitzending/nieuwsuur.html
    Live: http://www.nos.nl/livestream/*

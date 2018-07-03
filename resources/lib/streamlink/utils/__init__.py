@@ -1,7 +1,7 @@
+import functools
 import json
 import re
 import zlib
-import functools
 
 try:
     import xml.etree.cElementTree as ET
@@ -132,9 +132,7 @@ def rtmpparse(url):
     if len(parse.query) > 0:
         playpath += "?{parse.query}".format(parse=parse)
 
-    tcurl = "{scheme}://{netloc}/{app}".format(scheme=parse.scheme,
-                                               netloc=netloc,
-                                               app=app)
+    tcurl = "{scheme}://{netloc}/{app}".format(scheme=parse.scheme, netloc=netloc, app=app)
 
     return tcurl, playpath
 
@@ -198,6 +196,7 @@ def memoize(obj):
 def search_dict(data, key):
     """
     Search for a key in a nested dict, or list of nested dicts, and return the values.
+
     :param data: dict/list to search
     :param key: key to find
     :return: matches for key
@@ -212,6 +211,34 @@ def search_dict(data, key):
         for value in data:
             for result in search_dict(value, key):
                 yield result
+
+
+def load_module(name, path=None):
+    if is_py3:
+        import importlib.machinery
+        import importlib.util
+        import sys
+
+        loader_details = [(importlib.machinery.SourceFileLoader, importlib.machinery.SOURCE_SUFFIXES)]
+        finder = importlib.machinery.FileFinder(path, *loader_details)
+        spec = finder.find_spec(name)
+        if not spec or not spec.loader:
+            raise ImportError("no module named {0}".format(name))
+        if sys.version_info[1] > 4:
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            return mod
+        else:
+            return spec.loader.load_module(name)
+
+    else:
+        import imp
+        fd, filename, desc = imp.find_module(name, path and [path])
+        try:
+            return imp.load_module(name, fd, filename, desc)
+        finally:
+            if fd:
+                fd.close()
 
 
 #####################################
@@ -300,7 +327,7 @@ def swfverify(url):  # pragma: no cover
     return h.hexdigest(), len(swf)
 
 
-def escape_librtmp(value):
+def escape_librtmp(value):  # pragma: no cover
     if isinstance(value, bool):
         value = "1" if value else "0"
     if isinstance(value, int):
@@ -313,7 +340,7 @@ def escape_librtmp(value):
     return value
 
 
-__all__ = [
-    "urlopen", "urlget", "urlresolve", "swfdecompress", "swfverify", "verifyjson", "absolute_url", "parse_qsd",
-    "parse_json", "res_json", "parse_xml", "res_xml", "rtmpparse", "prepend_www", "NamedPipe", "escape_librtmp"
-]
+__all__ = ["urlopen", "urlget", "urlresolve", "swfdecompress", "swfverify",
+           "verifyjson", "absolute_url", "parse_qsd", "parse_json", "res_json",
+           "parse_xml", "res_xml", "rtmpparse", "prepend_www", "NamedPipe",
+           "escape_librtmp"]

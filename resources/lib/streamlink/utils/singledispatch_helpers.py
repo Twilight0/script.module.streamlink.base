@@ -13,10 +13,7 @@ try:
     from collections import UserDict
 except ImportError:
     from UserDict import UserDict
-try:
-    from collections import OrderedDict
-except ImportError:
-    from streamlink.utils.ordereddict import OrderedDict
+
 try:
     from thread import get_ident
 except ImportError:

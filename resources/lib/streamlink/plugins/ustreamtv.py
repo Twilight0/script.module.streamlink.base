@@ -103,8 +103,9 @@ class UHSClient(object):
 
     @property
     def host(self):
-        host = self._host or self.API_URL.format(randint(0, 0xffffff), self.media_id, self.application,
-                                                 "lp-" + self._cluster)
+        host = self._host or self.API_URL.format(
+            randint(0, 0xffffff), self.media_id, self.application, "lp-" + self._cluster
+        )
         return urljoin(host, "/1/ustream")
 
 

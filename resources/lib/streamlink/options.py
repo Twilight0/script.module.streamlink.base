@@ -1,7 +1,4 @@
-try:
-    from collections import OrderedDict
-except ImportError:
-    from streamlink.utils.ordereddict import OrderedDict
+from compat import OrderedDict
 
 
 def _normalise_option_name(name):
@@ -9,7 +6,7 @@ def _normalise_option_name(name):
 
 
 def _normalise_argument_name(name):
-    return name.replace('_', '-').strip("-")
+    return name.replace('_', '-').strip('-')
 
 
 class Options(object):
@@ -40,6 +37,10 @@ class Options(object):
         key = _normalise_option_name(key)
         if key in self.options:
             return self.options[key]
+
+    def update(self, options):
+        for key, value in options.items():
+            self.set(key, value)
 
 
 class Argument(object):
@@ -130,7 +131,7 @@ class Arguments(object):
 
         :return: list of dependant arguments
         """
-        results = set([name])
+        results = {name}
         argument = self.get(name)
         for reqname in argument.requires:
             required = self.get(reqname)

@@ -3,7 +3,7 @@ from __future__ import print_function, absolute_import
 import re
 
 from streamlink.plugin import Plugin
-from streamlink.plugin.api import http, validate
+from streamlink.plugin.api import validate
 from streamlink.stream import HLSStream
 from streamlink.utils import parse_json
 
@@ -25,8 +25,7 @@ class GOLTelevision(Plugin):
         return cls.url_re.match(url) is not None
 
     def _get_streams(self):
-        return HLSStream.parse_variant_playlist(self.session,
-                                                http.get(self.api_url, schema=self.api_schema))
+        return HLSStream.parse_variant_playlist(self.session, self.session.http.get(self.api_url, schema=self.api_schema))
 
 
 __plugin__ = GOLTelevision

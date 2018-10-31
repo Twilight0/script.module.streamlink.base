@@ -1,14 +1,21 @@
 import logging
-import warnings
-
 import sys
+import warnings
+from logging import NOTSET, ERROR, WARN, INFO, DEBUG, CRITICAL
 from threading import Lock
 
 from streamlink.compat import is_py2
-from logging import NOTSET, ERROR, WARN, INFO, DEBUG, CRITICAL
+from streamlink.utils.encoding import maybe_encode
 
 TRACE = 5
-_levelToName = dict([(CRITICAL, "critical"), (ERROR, "error"), (WARN, "warning"), (INFO, "info"), (DEBUG, "debug"), (TRACE, "trace"), (NOTSET, "none")])
+
+_levelToName = dict(
+    [
+        (CRITICAL, "critical"), (ERROR, "error"), (WARN, "warning"), (INFO, "info"), (DEBUG, "debug"),
+        (TRACE, "trace"), (NOTSET, "none")
+    ]
+)
+
 _nameToLevel = dict([(name, level) for level, name in _levelToName.items()])
 
 for level, name in _levelToName.items():
@@ -38,10 +45,10 @@ class _LogRecord(_CompatLogRecord):
         Return the message for this LogRecord after merging any user-supplied
         arguments with the message.
         """
-        msg = str(self.msg)
+        msg = self.msg
         if self.args:
             msg = msg.format(*self.args)
-        return msg
+        return maybe_encode(msg)
 
 
 class StreamlinkLogger(logging.getLoggerClass(), object):
@@ -74,7 +81,8 @@ class StreamlinkLogger(logging.getLoggerClass(), object):
 
     @staticmethod
     def new_module(name):
-        warnings.warn("Logger.new_module has been deprecated, use the standard logging.getLogger method", category=DeprecationWarning, stacklevel=2)
+        warnings.warn("Logger.new_module has been deprecated, use the standard logging.getLogger method",
+                      category=DeprecationWarning, stacklevel=2)
         return logging.getLogger("streamlink.{0}".format(name))
 
     @staticmethod
@@ -99,7 +107,12 @@ class StringFormatter(logging.Formatter):
         self.fmt = fmt
         self.remove_base = remove_base or []
 
+    def usesTime(self):
+        return (self.style == "%" and "%(asctime)" in self.fmt) or (self.style == "{" and "{asctime}" in self.fmt)
+
     def formatMessage(self, record):
+        if self.usesTime():
+            record.asctime = self.formatTime(record, self.datefmt)
         if self.style == "{":
             return self.fmt.format(**record.__dict__)
         else:

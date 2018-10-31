@@ -310,22 +310,6 @@ class Plugin(object):
         :param sorting_excludes: Specify which streams to exclude from
                                  the best/worst synonyms.
 
-
-        .. versionchanged:: 1.4.2
-           Added *priority* parameter.
-
-        .. versionchanged:: 1.5.0
-           Renamed *priority* to *stream_types* and changed behaviour
-           slightly.
-
-        .. versionchanged:: 1.5.0
-           Added *sorting_excludes* parameter.
-
-        .. versionchanged:: 1.6.0
-           *sorting_excludes* can now be a list of filter expressions
-           or a function that is passed to filter().
-
-
         """
 
         try:
@@ -396,6 +380,7 @@ class Plugin(object):
 
         stream_names = filter(stream_weight_only, streams.keys())
         sorted_streams = sorted(stream_names, key=stream_weight_only)
+        unfiltered_sorted_streams = sorted_streams
 
         if isinstance(sorting_excludes, list):
             for expr in sorting_excludes:
@@ -414,20 +399,25 @@ class Plugin(object):
             worst = sorted_streams[0]
             final_sorted_streams["worst"] = streams[worst]
             final_sorted_streams["best"] = streams[best]
+        elif len(unfiltered_sorted_streams) > 0:
+            best = unfiltered_sorted_streams[-1]
+            worst = unfiltered_sorted_streams[0]
+            final_sorted_streams["worst-unfiltered"] = streams[worst]
+            final_sorted_streams["best-unfiltered"] = streams[best]
 
         return final_sorted_streams
 
-    def get_streams(self, *args, **kwargs):
-        """Deprecated since version 1.9.0.
-
-        Has been renamed to :func:`Plugin.streams`, this is an alias
-        for backwards compatibility.
-        """
-
-        return self.streams(*args, **kwargs)
-
     def _get_streams(self):
         raise NotImplementedError
+
+    def get_title(self):
+        return None
+
+    def get_author(self):
+        return None
+
+    def get_category(self):
+        return None
 
     def save_cookies(self, cookie_filter=None, default_expires=60 * 60 * 24 * 7):
         """
@@ -533,6 +523,5 @@ class Plugin(object):
             except NotImplementedError:  # ignore this and raise a FatalPluginError
                 pass
         raise FatalPluginError("This plugin requires user input, however it is not supported on this platform")
-
 
 __all__ = ["Plugin"]

@@ -46,7 +46,6 @@ Fragment = namedtuple("Fragment", "segment fragment duration url")
 
 
 class HDSStreamWriter(SegmentedStreamWriter):
-
     def __init__(self, reader, *args, **kwargs):
         options = reader.stream.session.options
         kwargs["retries"] = options.get("hds-segment-attempts")
@@ -70,12 +69,12 @@ class HDSStreamWriter(SegmentedStreamWriter):
             params = request_params.pop("params", {})
             params.pop("g", None)
 
-            return self.session.http.get(
-                fragment.url, stream=True, timeout=self.timeout, exception=StreamError, params=params, **request_params
-            )
+            return self.session.http.get(fragment.url, stream=True, timeout=self.timeout, exception=StreamError, params=params, **request_params)
 
         except StreamError as err:
+
             log.error("Failed to open fragment {0}-{1}: {2}", fragment.segment, fragment.fragment, err)
+
             return self.fetch(fragment, retries - 1)
 
     def write(self, fragment, res, chunk_size=8192):
@@ -166,8 +165,7 @@ class HDSStreamWorker(SegmentedStreamWorker):
                 # Less likely to hit edge if we don't start with last fragment,
                 # default buffer is 10 sec.
                 fragment_buffer = int(ceil(self.live_edge / fragment_duration))
-                current_fragment = max(self.first_fragment,
-                                       current_fragment - (fragment_buffer - 1))
+                current_fragment = max(self.first_fragment, current_fragment - (fragment_buffer - 1))
 
                 log.debug("Live edge buffer {0} sec is {1} fragments", self.live_edge, fragment_buffer)
 
@@ -192,13 +190,10 @@ class HDSStreamWorker(SegmentedStreamWorker):
             log.debug("Bootstrap not changed, shortening timer")
             self.bootstrap_reload_time /= 2
 
-        self.bootstrap_reload_time = max(self.bootstrap_reload_time,
-                                         self.bootstrap_minimal_reload_time)
+        self.bootstrap_reload_time = max(self.bootstrap_reload_time, self.bootstrap_minimal_reload_time)
 
     def fetch_bootstrap(self, url):
-        res = self.session.http.get(url,
-                                    exception=StreamError,
-                                    **self.stream.request_params)
+        res = self.session.http.get(url, exception=StreamError, **self.stream.request_params)
         return Box.deserialize(BytesIO(res.content))
 
     def fragment_url(self, segment, fragment):
@@ -220,8 +215,7 @@ class HDSStreamWorker(SegmentedStreamWorker):
                 first_fragment = fragmentrun.first_fragment
 
             end_fragment = fragmentrun.first_fragment
-            fragment_duration = (fragmentrun.first_fragment_timestamp +
-                                 fragmentrun.fragment_duration)
+            fragment_duration = (fragmentrun.first_fragment_timestamp + fragmentrun.fragment_duration)
 
             if self.timestamp > fragment_duration:
                 offset = ((self.timestamp - fragment_duration) / fragmentrun.fragment_duration)
@@ -305,9 +299,11 @@ class HDSStreamWorker(SegmentedStreamWorker):
 
                 fragment_duration = int(self.fragment_duration(fragment) * 1000)
                 fragment_url = self.fragment_url(self.current_segment, fragment)
-                fragment = Fragment(self.current_segment, fragment, fragment_duration, fragment_url)
+                fragment = Fragment(self.current_segment, fragment,
+                                    fragment_duration, fragment_url)
 
-                log.debug("Adding fragment {0}-{1} to queue", fragment.segment, fragment.fragment)
+                log.debug("Adding fragment {0}-{1} to queue",
+                                  fragment.segment, fragment.fragment)
                 yield fragment
 
                 # End of stream
@@ -376,10 +372,10 @@ class HDSStream(Stream):
         )
 
     def __repr__(self):
-
         return (
-            "<HDSStream({0!r}, {1!r}, {2!r}, metadata={3!r}, timeout={4!r})>"
-        ).format(self.baseurl, self.url, self.bootstrap, self.metadata, self.timeout)
+            "<HDSStream({0!r}, {1!r}, {2!r}, metadata={3!r}, timeout={4!r})>").format(
+            self.baseurl, self.url, self.bootstrap, self.metadata, self.timeout
+        )
 
     def __json__(self):
         if isinstance(self.bootstrap, Box):
@@ -392,10 +388,10 @@ class HDSStream(Stream):
         else:
             metadata = self.metadata
 
-        return dict(
-            type=HDSStream.shortname(), baseurl=self.baseurl, url=self.url, bootstrap=bootstrap, metadata=metadata,
-            params=self.request_params.get("params", {}), headers=self.request_params.get("headers", {})
-        )
+        return dict(type=HDSStream.shortname(), baseurl=self.baseurl,
+                    url=self.url, bootstrap=bootstrap, metadata=metadata,
+                    params=self.request_params.get("params", {}),
+                    headers=self.request_params.get("headers", {}))
 
     def open(self):
         reader = HDSStreamReader(self)

@@ -7,11 +7,10 @@ import binascii
 from Crypto.Cipher import AES
 
 from streamlink.plugin import Plugin
-from streamlink.plugin.api import http
 from streamlink.plugin.api import validate
 from streamlink.stream import HLSStream
 from streamlink.utils import parse_json, update_scheme
-from streamlink.utils.cryptofix import unpad_pkcs5
+from streamlink.utils.crypto import unpad_pkcs5
 
 
 class WebTV(Plugin):
@@ -53,7 +52,7 @@ class WebTV(Plugin):
         :return:
         """
         headers = {}
-        res = http.get(self.url, headers=headers)
+        res = self.session.http.get(self.url, headers=headers)
         headers["Referer"] = self.url
 
         sources = self._sources_re.findall(res.text)

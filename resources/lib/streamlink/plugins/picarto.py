@@ -4,9 +4,10 @@ import re
 import json
 
 from streamlink.plugin import Plugin
-from streamlink.plugin.api import http
+from streamlink.plugin.api import validate
 from streamlink.stream import HLSStream
 from streamlink.stream import RTMPStream
+from streamlink.utils import parse_json
 
 
 class Picarto(Plugin):
@@ -16,13 +17,29 @@ class Picarto(Plugin):
     RTMP_PLAYPATH = "golive+{channel}?token={token}"
     HLS_URL = "https://{server}/hls/{channel}/index.m3u8?token={token}"
 
+
     # Regex for all usable URLs
     _url_re = re.compile(r"""
         https?://(?:\w+\.)?picarto\.tv/(?:videopopout/)?([^&?/]+)
     """, re.VERBOSE)
 
     # Regex for VOD extraction
-    _vod_re = re.compile(r'''vod: "(https?://[\S]+?/index.m3u8)",''')
+    _vod_re = re.compile(r'''(?<=#vod-player", )(\{.*?\})''')
+
+    data_schema = validate.Schema(
+        validate.transform(_vod_re.search),
+        validate.any(
+            None,
+            validate.all(
+                validate.get(0),
+                validate.transform(parse_json),
+                {
+                    "vod": validate.url(),
+                }
+            )
+        )
+    )
+
 
     @classmethod
     def can_handle_url(cls, url):
@@ -53,9 +70,10 @@ class Picarto(Plugin):
         return RTMPStream(self.session, params=params)
 
     def _get_vod_stream(self, page):
-        m = self._vod_re.search(page.text)
-        if m:
-            return HLSStream.parse_variant_playlist(self.session, m.group(1))
+        data = self.data_schema.validate(page.text)
+
+        if data:
+            return HLSStream.parse_variant_playlist(self.session, data["vod"])
 
     def _get_streams(self):
         url_channel_name = self._url_re.match(self.url).group(1)
@@ -63,7 +81,7 @@ class Picarto(Plugin):
         # Handle VODs first, since their "channel name" is different
         if url_channel_name.endswith(".flv"):
             self.logger.debug("Possible VOD stream...")
-            page = http.get(self.url)
+            page = self.session.http.get(self.url)
             vod_streams = self._get_vod_stream(page)
             if vod_streams:
                 for s in vod_streams.items():
@@ -72,7 +90,7 @@ class Picarto(Plugin):
             else:
                 self.logger.warning("Probably a VOD stream but no VOD found?")
 
-        ci = http.get(self.CHANNEL_API_URL.format(channel=url_channel_name), raise_for_status=False)
+        ci = self.session.http.get(self.CHANNEL_API_URL.format(channel=url_channel_name), raise_for_status=False)
 
         if ci.status_code == 404:
             self.logger.error("The channel {0} does not exist".format(url_channel_name))
@@ -89,7 +107,7 @@ class Picarto(Plugin):
         channel = channel_api_json["name"]
 
         # Extract preferred edge server and available techs from the undocumented channel API
-        channel_server_res = http.post(self.VIDEO_API_URL, data={"loadbalancinginfo": channel})
+        channel_server_res = self.session.http.post(self.VIDEO_API_URL, data={"loadbalancinginfo": channel})
         info_json = json.loads(channel_server_res.text)
         pref = info_json["preferedEdge"]
         for i in info_json["edges"]:

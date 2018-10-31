@@ -13,7 +13,6 @@ Supports:
 import re
 
 from streamlink.plugin import Plugin, PluginArguments, PluginArgument
-from streamlink.plugin.api import http
 from streamlink.plugin.api import useragents
 from streamlink.plugin.api import validate
 from streamlink.stream import HLSStream
@@ -41,8 +40,7 @@ class NPO(Plugin):
     }, validate.get("items"), validate.get(0))
     stream_info_schema = validate.Schema(validate.any(
         validate.url(),
-        validate.all({"errorcode": 0, "url": validate.url()},
-                     validate.get("url"))
+        validate.all({"errorcode": 0, "url": validate.url()}, validate.get("url"))
     ))
     arguments = PluginArguments(
         PluginArgument(
@@ -61,12 +59,12 @@ class NPO(Plugin):
     def __init__(self, url):
         super(NPO, self).__init__(url)
         self._token = None
-        http.headers.update({"User-Agent": useragents.CHROME})
+        self.session.http.headers.update({"User-Agent": useragents.CHROME})
 
     def api_call(self, endpoint, schema=None, params=None):
         url = self.api_url.format(endpoint=endpoint)
-        res = http.get(url, params=params)
-        return http.json(res, schema=schema)
+        res = self.session.http.get(url, params=params)
+        return self.session.http.json(res, schema=schema)
 
     @property
     def token(self):
@@ -75,7 +73,7 @@ class NPO(Plugin):
         return self._token
 
     def _get_prid(self, subtitles=False):
-        res = http.get(self.url)
+        res = self.session.http.get(self.url)
         bprid = None
 
         # Locate the asset id for the content on the page
@@ -103,10 +101,7 @@ class NPO(Plugin):
 
         if asset_id:
             self.logger.debug("Found asset id: {0}", asset_id)
-            streams = self.api_call(asset_id,
-                                    params=dict(adaptive="yes",
-                                                token=self.token),
-                                    schema=self.streams_schema)
+            streams = self.api_call(asset_id, params=dict(adaptive="yes", token=self.token), schema=self.streams_schema)
 
             for stream in streams:
                 if stream["format"] in ("adaptive", "hls", "mp4"):
@@ -117,8 +112,7 @@ class NPO(Plugin):
                         info_url = stream["url"].replace("type=jsonp", "type=json")
 
                         # find the actual stream URL
-                        stream_url = http.json(http.get(info_url),
-                                               schema=self.stream_info_schema)
+                        stream_url = self.session.http.json(self.session.http.get(info_url), schema=self.stream_info_schema)
 
                     if stream["format"] in ("adaptive", "hls"):
                         for s in HLSStream.parse_variant_playlist(self.session, stream_url).items():

@@ -8,6 +8,8 @@ import time
 
 from collections import defaultdict, namedtuple
 from itertools import repeat, count
+
+import math
 from streamlink.utils.isodate import parse_datetime, parse_duration, Duration
 from contextlib import contextmanager
 from streamlink.compat import urlparse, urljoin, urlunparse, izip, urlsplit, urlunsplit
@@ -507,6 +509,10 @@ class SegmentTemplate(MPDNode):
 
     def format_media(self, **kwargs):
         if self.segmentTimeline:
+            if self.parent.id is None:
+                # workaround for invalid `self.root.timelines[self.parent.id]`
+                # creates a timeline for every mimeType instead of one for both
+                self.parent.id = self.parent.mimeType
             log.debug("Generating segment timeline for {0} playlist (id={1}))".format(self.root.type, self.parent.id))
             if self.root.type == "dynamic":
                 # if there is no delay, use a delay of 3 seconds
@@ -580,6 +586,10 @@ class Representation(MPDNode):
         self.segmentList = self.children(SegmentList)
         self.segmentTemplate = self.only_child(SegmentTemplate)
 
+    @property
+    def bandwidth_rounded(self):
+        return round(self.bandwidth, 1 - int(math.log10(self.bandwidth)))
+
     def segments(self, **kwargs):
         """
         Segments are yielded when they are available
@@ -630,7 +640,8 @@ class SegmentTimeline(MPDNode):
     def segments(self):
         t = 0
         for tsegment in self.timeline_segments:
-            t = t or tsegment.t
+            if t == 0 and tsegment.t is not None:
+                t = tsegment.t
             # check the start time from MPD
             for repeated_i in range(tsegment.r + 1):
                 yield self.TimelineSegment(t, tsegment.d)

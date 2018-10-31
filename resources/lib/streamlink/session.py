@@ -10,7 +10,7 @@ from streamlink.logger import StreamlinkLogger, Logger
 from streamlink.utils import update_scheme, memoize
 from streamlink.utils.l10n import Localization
 from . import plugins, __version__
-from .compat import is_win32
+from .compat import is_win32, OrderedDict
 from .exceptions import NoPluginError, PluginError
 from .options import Options
 from .plugin import api
@@ -79,7 +79,7 @@ class Streamlink(object):
         })
         if options:
             self.options.update(options)
-        self.plugins = {}
+        self.plugins = OrderedDict({})
         self.load_builtin_plugins()
         self._logger = None
 

@@ -6,8 +6,8 @@ import re
 
 from streamlink.compat import parse_qsl, is_py2
 from streamlink.plugin import Plugin, PluginError, PluginArguments, PluginArgument
-from streamlink.plugin.api import http, validate, useragents
-from streamlink.plugin.api.utils import parse_query
+from streamlink.plugin.api import validate, useragents
+from streamlink.plugin.api.utils import itertags, parse_query
 from streamlink.stream import HTTPStream, HLSStream
 from streamlink.stream.ffmpegmux import MuxedStream
 from streamlink.utils import parse_json, search_dict
@@ -80,42 +80,50 @@ _config_schema = validate.Schema(
         validate.optional("reason"): validate.all(validate.text, validate.transform(maybe_decode)),
         validate.optional("livestream"): validate.text,
         validate.optional("live_playback"): validate.text,
+        validate.optional("author"): validate.all(validate.text,
+                                                  validate.transform(maybe_decode)),
+        validate.optional("title"): validate.all(validate.text,
+                                                 validate.transform(maybe_decode)),
         "status": validate.text
     }
 )
-_search_schema = validate.Schema(
-    {
-        "items": [{
-            "id": {
-                "videoId": validate.text
-            }
-        }]
-    },
-    validate.get("items")
-)
 
 _ytdata_re = re.compile(r'window\["ytInitialData"\]\s*=\s*({.*?});', re.DOTALL)
-_url_re = re.compile(r"""
-    http(s)?://(\w+\.)?youtube.com
+_url_re = re.compile(r"""(?x)https?://(?:\w+\.)?youtube\.com
     (?:
         (?:
-            /(watch.+v=|embed/|v/)
+            /(?:watch.+v=|embed/(?!live_stream)|v/)
             (?P<video_id>[0-9A-z_-]{11})
         )
         |
         (?:
-            /(user|channel)/(?P<user>[^/?]+)
+            /(?:
+                (?:user|channel)/
+                |
+                embed/live_stream\?channel=
+            )(?P<user>[^/?&]+)
         )
         |
         (?:
-            /(c/)?(?P<liveChannel>[^/?]+)/live
+            /(?:c/)?(?P<liveChannel>[^/?]+)/live/?$
         )
     )
-""", re.VERBOSE)
+""")
 
 
 class YouTube(Plugin):
+    _oembed_url = "https://www.youtube.com/oembed"
     _video_info_url = "https://youtube.com/get_video_info"
+
+    _oembed_schema = validate.Schema(
+        {
+            "author_name": validate.all(validate.text,
+                                        validate.transform(maybe_decode)),
+            "title": validate.all(validate.text,
+                                  validate.transform(maybe_decode))
+        }
+    )
+
     adp_video = {
         137: "1080p",
         303: "1080p60",  # HFR
@@ -146,6 +154,23 @@ class YouTube(Plugin):
         )
     )
 
+    def __init__(self, url):
+        super(YouTube, self).__init__(url)
+        self.author = None
+        self.title = None
+        self.video_id = None
+        self.session.http.headers.update({'User-Agent': useragents.CHROME})
+
+    def get_author(self):
+        if self.author is None:
+            self.get_oembed
+        return self.author
+
+    def get_title(self):
+        if self.title is None:
+            self.get_oembed
+        return self.title
+
     @classmethod
     def can_handle_url(cls, url):
         return _url_re.match(url)
@@ -166,6 +191,20 @@ class YouTube(Plugin):
             weight, group = Plugin.stream_weight(stream)
 
         return weight, group
+
+    @property
+    def get_oembed(self):
+        if self.video_id is None:
+            self.video_id = self._find_video_id(self.url)
+
+        params = {
+            "url": "https://www.youtube.com/watch?v={0}".format(self.video_id),
+            "format": "json"
+        }
+        res = self.session.http.get(self._oembed_url, params=params)
+        data = self.session.http.json(res, schema=self._oembed_schema)
+        self.author = data["author_name"]
+        self.title = data["title"]
 
     def _create_adaptive_streams(self, info, streams, protected):
         adaptive_streams = {}
@@ -217,7 +256,7 @@ class YouTube(Plugin):
             log.debug("Video ID from URL")
             return m.group("video_id")
 
-        res = http.get(url)
+        res = self.session.http.get(url)
         datam = _ytdata_re.search(res.text)
         if datam:
             data = parse_json(datam.group(1))
@@ -234,6 +273,16 @@ class YouTube(Plugin):
                             log.debug("Video ID from videoRenderer (live)")
                             return x["videoId"]
 
+        if "/embed/live_stream" in url:
+            for link in itertags(res.text, "link"):
+                if link.attributes.get("rel") == "canonical":
+                    canon_link = link.attributes.get("href")
+                    if canon_link != url:
+                        log.debug("Re-directing to canonical URL: {0}".format(canon_link))
+                        return self._find_video_id(canon_link)
+
+        raise PluginError("Could not find a video on this page")
+
     def _get_stream_info(self, video_id):
         # normal
         _params_1 = {"el": "detailpage"}
@@ -249,30 +298,27 @@ class YouTube(Plugin):
             params = {"video_id": video_id}
             params.update(_params)
 
-            res = http.get(self._video_info_url, params=params)
+            res = self.session.http.get(self._video_info_url, params=params)
             info_parsed = parse_query(res.content if is_py2 else res.text, name="config", schema=_config_schema)
             if info_parsed.get("status") == "fail":
                 log.debug("get_video_info - {0}: {1}".format(
                     count, info_parsed.get("reason"))
                 )
                 continue
+            self.author = info_parsed.get("author")
+            self.title = info_parsed.get("title")
             log.debug("get_video_info - {0}: Found data".format(count))
             break
 
         return info_parsed
 
     def _get_streams(self):
-        http.headers.update({'User-Agent': useragents.CHROME})
         is_live = False
 
-        video_id = self._find_video_id(self.url)
-        if not video_id:
-            log.error("Could not find a video on this page")
-            return
+        self.video_id = self._find_video_id(self.url)
+        log.debug("Using video ID: {0}", self.video_id)
 
-        log.debug("Using video ID: {0}", video_id)
-
-        info = self._get_stream_info(video_id)
+        info = self._get_stream_info(self.video_id)
         if info and info.get("status") == "fail":
             log.error("Could not get video info: {0}".format(info.get("reason")))
             return

@@ -1,6 +1,6 @@
 # script.module.streamlink.base
 
-_Streamlink library packed for Kodi:_[Upstream link](https://github.com/streamlink/streamlink)
+_Streamlink library packed for Kodi: [Upstream link](https://github.com/streamlink/streamlink)
 
 You can install it from [repository.twilight0.libs](https://github.com/Twilight0/repo.twilight0.libs)
 

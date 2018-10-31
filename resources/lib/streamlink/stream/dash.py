@@ -11,6 +11,7 @@ from streamlink.stream.stream import Stream
 from streamlink.stream.dash_manifest import MPD, sleeper, sleep_until, utc, freeze_timeline
 from streamlink.stream.ffmpegmux import FFMPEGMuxer
 from streamlink.stream.segmented import SegmentedStreamReader, SegmentedStreamWorker, SegmentedStreamWriter
+from streamlink.utils.l10n import Language
 
 log = logging.getLogger(__name__)
 
@@ -135,6 +136,7 @@ class DASHStreamReader(SegmentedStreamReader):
         log.debug("Opening DASH reader for: {0} ({1})".format(self.representation_id, self.mime_type))
 
 
+
 class DASHStream(Stream):
     __shortname__ = "dash"
 
@@ -189,12 +191,37 @@ class DASHStream(Stream):
         if not audio:
             audio = [None]
 
+        locale = session.localization
+        locale_lang = locale.language
+        lang = None
+        available_languages = set()
+
+        # if the locale is explicitly set, prefer that language over others
+        for aud in audio:
+            if aud and aud.lang:
+                available_languages.add(aud.lang)
+                try:
+                    if locale.explicit and aud.lang and Language.get(aud.lang) == locale_lang:
+                        lang = aud.lang
+                except LookupError:
+                    continue
+
+        if not lang:
+            # filter by the first language that appears
+            lang = audio[0] and audio[0].lang
+
+        log.debug("Available languages for DASH audio streams: {0} (using: {1})".format(", ".join(available_languages) or "NONE", lang or "n/a"))
+
+        # if the language is given by the stream, filter out other languages that do not match
+        if len(available_languages) > 1:
+            audio = list(filter(lambda a: a.lang is None or a.lang == lang, audio))
+
         for vid, aud in itertools.product(video, audio):
             stream = DASHStream(session, mpd, vid, aud, **args)
             stream_name = []
 
             if vid:
-                stream_name.append("{:0.0f}{}".format(vid.height or vid.bandwidth, "p" if vid.height else "k"))
+                stream_name.append("{:0.0f}{}".format(vid.height or vid.bandwidth_rounded, "p" if vid.height else "k"))
             if audio and len(audio) > 1:
                 stream_name.append("a{:0.0f}k".format(aud.bandwidth))
             ret['+'.join(stream_name)] = stream

@@ -9,7 +9,6 @@ from hashlib import sha1
 from streamlink import PluginError
 from streamlink.compat import parse_qsl, urlparse
 from streamlink.plugin import Plugin, PluginArguments, PluginArgument
-from streamlink.plugin.api import http
 from streamlink.plugin.api import validate
 from streamlink.stream import HDSStream
 from streamlink.stream import HLSStream
@@ -30,12 +29,14 @@ class BBCiPlayer(Plugin):
             live/(?P<channel_name>\w+)
         )
     """, re.VERBOSE)
-    mediator_re = re.compile(r'window\.mediatorDefer\s*=\s*page\([^,]*,\s*({.*?})\);', re.DOTALL)
+    mediator_re = re.compile(
+        r'window\.mediatorDefer\s*=\s*page\([^,]*,\s*({.*?})\);', re.DOTALL)
     tvip_re = re.compile(r'channel"\s*:\s*{\s*"id"\s*:\s*"(\w+?)"')
     tvip_master_re = re.compile(r'event_master_brand=(\w+?)&')
     account_locals_re = re.compile(r'window.bbcAccount.locals\s*=\s*({.*?});')
     swf_url = "http://emp.bbci.co.uk/emp/SMPf/1.18.3/StandardMediaPlayerChromelessFlash.swf"
-    hash = base64.b64decode(b"N2RmZjc2NzFkMGM2OTdmZWRiMWQ5MDVkOWExMjE3MTk5MzhiOTJiZg==")
+    hash = base64.b64decode(
+        b"N2RmZjc2NzFkMGM2OTdmZWRiMWQ5MDVkOWExMjE3MTk5MzhiOTJiZg==")
     api_url = ("http://open.live.bbc.co.uk/mediaselector/6/select/"
                "version/2.0/mediaset/{platform}/vpid/{vpid}/format/json/atk/{vpid_hash}/asn/1/")
     platforms = ("pc", "iptv-all")
@@ -80,7 +81,10 @@ class BBCiPlayer(Plugin):
         PluginArgument(
             "hd",
             action="store_true",
-            help="Prefer HD streams over local SD streams, some live programmes may not be broadcast in HD."
+            help="""
+            Prefer HD streams over local SD streams, some live programmes may
+            not be broadcast in HD.
+            """
         ),
     )
 
@@ -129,14 +133,14 @@ class BBCiPlayer(Plugin):
         """
         log.debug("Looking for vpid on {0}", url)
         # Use pre-fetched page if available
-        res = res or http.get(url)
+        res = res or self.session.http.get(url)
         m = self.mediator_re.search(res.text)
         vpid = m and parse_json(m.group(1), schema=self.mediator_schema)
         return vpid
 
     def find_tvip(self, url, master=False):
         log.debug("Looking for {0} tvip on {1}", "master" if master else "", url)
-        res = http.get(url)
+        res = self.session.http.get(url)
         if master:
             m = self.tvip_master_re.search(res.text)
         else:
@@ -149,7 +153,7 @@ class BBCiPlayer(Plugin):
             url = self.api_url.format(vpid=vpid, vpid_hash=self._hash_vpid(vpid),
                                       platform=platform)
             log.debug("Info API request: {0}", url)
-            medias = http.get(url, schema=self.mediaselector_schema)
+            medias = self.session.http.get(url, schema=self.mediaselector_schema)
             for media in medias:
                 for connection in media["connection"]:
                     urls[connection.get("transferFormat")].add(connection["href"])
@@ -183,14 +187,14 @@ class BBCiPlayer(Plugin):
         :return: Whether authentication was successful
         :rtype: bool
         """
-        session_res = http.get(
+        session_res = self.session.http.get(
             self.session_url,
             params=dict(ptrt=ptrt_url)
         )
 
         http_nonce = self._extract_nonce(session_res)
 
-        res = http.post(
+        res = self.session.http.post(
             self.auth_url,
             params=dict(
                 ptrt=ptrt_url,

@@ -1,3 +1,10 @@
++ 2018.10.31
+- Rebase to latest upstream commit eab005175d4b76dde3d1becacd718b646384a15e
+
++ 2018.07.03
+- Plugins updates
+- Various other tweaks pulled from upstream
+
 + 2018.06.20
 - Plugins updates
 - Various cosmetics

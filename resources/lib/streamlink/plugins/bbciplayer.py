@@ -1,4 +1,4 @@
-from __future__ import print_function
+# -*- coding: utf-8 -*-
 
 import base64
 import logging
@@ -45,11 +45,11 @@ class BBCiPlayer(Plugin):
 
     mediator_schema = validate.Schema(
         {
-            "episode": {
+            "appStoreState": {
                 "versions": [{"id": validate.text}]
             }
         },
-        validate.get("episode"), validate.get("versions"), validate.get(0),
+        validate.get("appStoreState"), validate.get("versions"), validate.get(0),
         validate.get("id")
     )
     mediaselector_schema = validate.Schema(

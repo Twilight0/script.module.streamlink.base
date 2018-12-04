@@ -1,3 +1,7 @@
++ 2018.12.04
+- Rebase to latest upstream commit b99249e941852341b06b267ffc1ca1d144c6b718
+- New icon
+
 + 2018.10.31
 - Rebase to latest upstream commit eab005175d4b76dde3d1becacd718b646384a15e
 

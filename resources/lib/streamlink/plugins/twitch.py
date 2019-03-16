@@ -10,7 +10,9 @@ from streamlink.exceptions import NoStreamsError, PluginError, StreamError
 from streamlink.plugin import Plugin, PluginArguments, PluginArgument
 from streamlink.plugin.api import validate
 from streamlink.plugin.api.utils import parse_json, parse_query
-from streamlink.stream import (HTTPStream, HLSStream, FLVPlaylist, extract_flv_header_tags)
+from streamlink.stream import (
+    HTTPStream, HLSStream, FLVPlaylist, extract_flv_header_tags
+)
 from streamlink.utils.times import hours_minutes_seconds
 
 try:

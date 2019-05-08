@@ -6,6 +6,7 @@ is_py3 = (sys.version_info[0] == 3)
 is_win32 = os.name == "nt"
 
 if is_py2:
+
     _str = str
     str = unicode
     range = xrange
@@ -21,6 +22,7 @@ if is_py2:
             return _str(b)
 
 elif is_py3:
+
     bytes = bytes
     str = str
     range = range

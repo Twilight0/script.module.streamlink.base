@@ -1,3 +1,7 @@
++2019.06.23
+- Changed crypto module addon id
+- Updated description
+
 +2019.05.08
 - Added vimeo plugin
 

@@ -13,16 +13,10 @@ from time import time, mktime
 # else:
 #     xdg_cache = os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache"))
 
-xdg_cache = xbmc.translatePath('special://profile/addon_data/script.module.streamlink.base').encode('utf-8')
+xdg_cache = tmp_dir = cache_dir = xbmc.translatePath('special://profile/addon_data/script.module.streamlink')
 
-cache_dir = os.path.join(xdg_cache, "streamlink")
-tmp_dir = os.path.join(xdg_cache, "tmp")
-
-if not xbmcvfs.exists(cache_dir):
-    xbmcvfs.mkdirs(cache_dir)
 if not xbmcvfs.exists(tmp_dir):
     xbmcvfs.mkdirs(tmp_dir)
-
 
 class Cache(object):
     """Caches Python values as JSON and prunes expired entries."""

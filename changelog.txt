@@ -1,3 +1,7 @@
++2020.01.28
+- Updated to latest upstream commit
+- Tweaks for import errors for Python 3
+
 +2019.11.11.X
 - Updated to cc32730ea7c9749169df34e2f1a82c1fdb704df4 from upstream
       > USTVNOW plugin has been removed due to improper crypto library imports (due to backwards compatibility)

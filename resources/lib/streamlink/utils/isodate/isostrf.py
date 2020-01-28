@@ -33,11 +33,13 @@ possible with standard Python date/time objects. Furthermore there are several
 pr-defined format strings in this module to make ease producing of ISO 8601
 conforming strings.
 """
+from __future__ import absolute_import
+
 import re
 from datetime import date, timedelta
 
-from duration import Duration
-from isotzinfo import tz_isoformat
+from .duration import Duration
+from .isotzinfo import tz_isoformat
 
 # Date specific format strings
 DATE_BAS_COMPLETE = '%Y%m%d'

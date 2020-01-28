@@ -1,6 +1,6 @@
 # script.module.streamlink.base
 
-_Streamlink library packed for Kodi: [Upstream link](https://github.com/streamlink/streamlink)
+Streamlink library packed for Kodi: [Upstream link](https://github.com/streamlink/streamlink)
 
 You can install it from [repository.twilight0.libs](https://github.com/Twilight0/repo.twilight0.libs)
 
@@ -17,7 +17,7 @@ Add this to your repository xml in order to pull updates:
 
     import streamlink
     streams = streamlink.streams("https://www.youtube.com/watch?v=XIMLoLxmTDw")
-    url = streams.['best'].to_url()
+    url = streams['best'].to_url()
 
 Where url can be passed into the player:
 
@@ -39,7 +39,7 @@ If an error occurs while fetching streams, a **PluginError** will be raised.
             session = streamlink.session.Streamlink()
             plugin = session.resolve_url(url)
             streams = plugin.get_streams()
-            playable_link = streams.[quality].to_url()
+            playable_link = streams[quality].to_url()
 
             return playable_link
 

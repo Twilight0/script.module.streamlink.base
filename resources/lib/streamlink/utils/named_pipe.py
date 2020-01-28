@@ -3,12 +3,9 @@ import os
 
 from ..compat import is_win32, is_py3
 
-import xbmc
-import xbmcvfs
+import xbmc, xbmcvfs
 
-xdg_cache = xbmc.translatePath('special://profile/addon_data/script.module.streamlink.base').encode('utf-8')
-
-tmp_dir = os.path.join(xdg_cache, "tmp")
+xdg_cache = tmp_dir = xbmc.translatePath('special://profile/addon_data/script.module.streamlink')
 
 if not xbmcvfs.exists(tmp_dir):
     xbmcvfs.mkdirs(tmp_dir)

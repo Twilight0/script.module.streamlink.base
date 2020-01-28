@@ -29,10 +29,12 @@ This module provides an ISO 8601:2004 time zone info parser.
 
 It offers a function to parse the time zone offset as specified by ISO 8601.
 '''
+from __future__ import absolute_import
+
 import re
 
-from isoerror import ISO8601Error
-from tzinfo import UTC, FixedOffset, ZERO
+from .isoerror import ISO8601Error
+from .tzinfo import UTC, FixedOffset, ZERO
 
 TZ_REGEX = r"(?P<tzname>(Z|(?P<tzsign>[+-])"\
            r"(?P<tzhour>[0-9]{2})(:?(?P<tzmin>[0-9]{2}))?)?)"

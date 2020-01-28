@@ -67,7 +67,7 @@ class VaughnLive(Plugin):
                                               port=2935))
             stream_url = stream.to_url()
             res = self.session.http.head(stream_url, raise_for_status=False)
-            print(res.status_code)
+
             yield "live", stream
 
 

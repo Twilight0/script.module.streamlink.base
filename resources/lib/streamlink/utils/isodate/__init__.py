@@ -30,30 +30,32 @@ access.
 
 This module contains also various pre-defined ISO 8601 format strings.
 '''
-from isodates import parse_date, date_isoformat
-from isotime import parse_time, time_isoformat
-from isodatetime import parse_datetime, datetime_isoformat
-from isoduration import parse_duration, duration_isoformat
-from isoerror import ISO8601Error
-from isotzinfo import parse_tzinfo, tz_isoformat
-from tzinfo import UTC, FixedOffset, LOCAL
-from duration import Duration
-from isostrf import strftime
-from isostrf import DATE_BAS_COMPLETE, DATE_BAS_ORD_COMPLETE
-from isostrf import DATE_BAS_WEEK, DATE_BAS_WEEK_COMPLETE
-from isostrf import DATE_CENTURY, DATE_EXT_COMPLETE
-from isostrf import DATE_EXT_ORD_COMPLETE, DATE_EXT_WEEK
-from isostrf import DATE_EXT_WEEK_COMPLETE, DATE_YEAR
-from isostrf import DATE_BAS_MONTH, DATE_EXT_MONTH
-from isostrf import TIME_BAS_COMPLETE, TIME_BAS_MINUTE
-from isostrf import TIME_EXT_COMPLETE, TIME_EXT_MINUTE
-from isostrf import TIME_HOUR
-from isostrf import TZ_BAS, TZ_EXT, TZ_HOUR
-from isostrf import DT_BAS_COMPLETE, DT_EXT_COMPLETE
-from isostrf import DT_BAS_ORD_COMPLETE, DT_EXT_ORD_COMPLETE
-from isostrf import DT_BAS_WEEK_COMPLETE, DT_EXT_WEEK_COMPLETE
-from isostrf import D_DEFAULT, D_WEEK, D_ALT_EXT, D_ALT_BAS
-from isostrf import D_ALT_BAS_ORD, D_ALT_EXT_ORD
+from __future__ import absolute_import
+
+from .isodates import parse_date, date_isoformat
+from .isotime import parse_time, time_isoformat
+from .isodatetime import parse_datetime, datetime_isoformat
+from .isoduration import parse_duration, duration_isoformat
+from .isoerror import ISO8601Error
+from .isotzinfo import parse_tzinfo, tz_isoformat
+from .tzinfo import UTC, FixedOffset, LOCAL
+from .duration import Duration
+from .isostrf import strftime
+from .isostrf import DATE_BAS_COMPLETE, DATE_BAS_ORD_COMPLETE
+from .isostrf import DATE_BAS_WEEK, DATE_BAS_WEEK_COMPLETE
+from .isostrf import DATE_CENTURY, DATE_EXT_COMPLETE
+from .isostrf import DATE_EXT_ORD_COMPLETE, DATE_EXT_WEEK
+from .isostrf import DATE_EXT_WEEK_COMPLETE, DATE_YEAR
+from .isostrf import DATE_BAS_MONTH, DATE_EXT_MONTH
+from .isostrf import TIME_BAS_COMPLETE, TIME_BAS_MINUTE
+from .isostrf import TIME_EXT_COMPLETE, TIME_EXT_MINUTE
+from .isostrf import TIME_HOUR
+from .isostrf import TZ_BAS, TZ_EXT, TZ_HOUR
+from .isostrf import DT_BAS_COMPLETE, DT_EXT_COMPLETE
+from .isostrf import DT_BAS_ORD_COMPLETE, DT_EXT_ORD_COMPLETE
+from .isostrf import DT_BAS_WEEK_COMPLETE, DT_EXT_WEEK_COMPLETE
+from .isostrf import D_DEFAULT, D_WEEK, D_ALT_EXT, D_ALT_BAS
+from .isostrf import D_ALT_BAS_ORD, D_ALT_EXT_ORD
 
 __all__ = [
     'parse_date', 'date_isoformat', 'parse_time', 'time_isoformat', 'parse_datetime', 'datetime_isoformat',

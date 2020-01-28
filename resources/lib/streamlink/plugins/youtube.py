@@ -148,7 +148,6 @@ class YouTube(Plugin):
 
     adp_video = {
         137: "1080p",
-        303: "1080p60",  # HFR
         299: "1080p60",  # HFR
         264: "1440p",
         308: "1440p60",  # HFR
@@ -269,9 +268,7 @@ class YouTube(Plugin):
                         name=name,
                         video=itag,
                     ))
-                    streams[name] = MuxedStream(
-                        self.session, HTTPStream(self.session, vurl), HTTPStream(self.session, aurl)
-                    )
+                    streams[name] = MuxedStream(self.session, HTTPStream(self.session, vurl), HTTPStream(self.session, aurl))
 
         return streams, protected
 

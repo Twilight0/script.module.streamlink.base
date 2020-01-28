@@ -30,16 +30,18 @@ This module provides an ISO 8601:2004 duration parser.
 It also provides a wrapper to strftime. This wrapper makes it easier to
 format timedelta or Duration instances as ISO conforming strings.
 '''
+from __future__ import absolute_import
+
 from datetime import timedelta
 from decimal import Decimal
 import re
 
 from streamlink.utils.six import string_types
 
-from duration import Duration
-from isoerror import ISO8601Error
-from isodatetime import parse_datetime
-from isostrf import strftime, D_DEFAULT
+from .duration import Duration
+from .isoerror import ISO8601Error
+from .isodatetime import parse_datetime
+from .isostrf import strftime, D_DEFAULT
 
 ISO8601_PERIOD_REGEX = re.compile(
     r"^(?P<sign>[+-])?"

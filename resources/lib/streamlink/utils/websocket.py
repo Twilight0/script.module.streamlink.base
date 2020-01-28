@@ -34,7 +34,7 @@ except ImportError:
 
     HAVE_SSL = False
 
-from urlparse import urlparse
+from streamlink.compat import urlparse, range, is_py3
 import os
 import array
 import struct
@@ -73,6 +73,9 @@ STATUS_UNEXPECTED_CONDITION = 1011
 STATUS_TLS_HANDSHAKE_ERROR = 1015
 
 logger = logging.getLogger()
+
+if is_py3:
+    unicode = str
 
 
 class WebSocketException(Exception):
@@ -205,7 +208,7 @@ def create_connection(url, timeout=None, **options):
 
 
 _MAX_INTEGER = (1 << 32) - 1
-_AVAILABLE_KEY_CHARS = range(0x21, 0x2f + 1) + range(0x3a, 0x7e + 1)
+_AVAILABLE_KEY_CHARS = list(range(0x21, 0x2f + 1)) + list(range(0x3a, 0x7e + 1))
 _MAX_CHAR_BYTE = (1 << 8) - 1
 
 
@@ -339,7 +342,7 @@ class ABNF(object):
         """
         _m = array.array("B", mask_key)
         _d = array.array("B", data)
-        for i in xrange(len(_d)):
+        for i in list(range(len(_d))):
             _d[i] ^= _m[i % 4]
         return _d.tostring()
 
@@ -832,7 +835,7 @@ class WebSocketApp(object):
 
     def _send_ping(self, interval):
         while True:
-            for i in range(interval):
+            for i in list(range(interval)):
                 time.sleep(1)
                 if not self.keep_running:
                     return

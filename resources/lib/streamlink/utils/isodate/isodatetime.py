@@ -30,13 +30,15 @@ This module defines a method to parse an ISO 8601:2004 date time string.
 For this job it uses the parse_date and parse_time methods defined in date
 and time module.
 '''
+from __future__ import absolute_import
+
 from datetime import datetime
 
-from isostrf import strftime
-from isostrf import DATE_EXT_COMPLETE, TIME_EXT_COMPLETE, TZ_EXT
-from isodates import parse_date
-from isoerror import ISO8601Error
-from isotime import parse_time
+from .isostrf import strftime
+from .isostrf import DATE_EXT_COMPLETE, TIME_EXT_COMPLETE, TZ_EXT
+from .isodates import parse_date
+from .isoerror import ISO8601Error
+from .isotime import parse_time
 
 
 def parse_datetime(datetimestring):

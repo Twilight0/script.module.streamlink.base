@@ -31,13 +31,15 @@ Python datetime.time instance.
 It supports all basic and extended formats including time zone specifications
 as described in the ISO standard.
 '''
+from __future__ import absolute_import
+
 import re
 from decimal import Decimal
 from datetime import time
 
-from isostrf import strftime, TIME_EXT_COMPLETE, TZ_EXT
-from isoerror import ISO8601Error
-from isotzinfo import TZ_REGEX, build_tzinfo
+from .isostrf import strftime, TIME_EXT_COMPLETE, TZ_EXT
+from .isoerror import ISO8601Error
+from .isotzinfo import TZ_REGEX, build_tzinfo
 
 TIME_REGEX_CACHE = []
 # used to cache regular expressions to parse ISO time strings.

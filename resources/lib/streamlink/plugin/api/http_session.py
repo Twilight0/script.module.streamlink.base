@@ -3,6 +3,7 @@ from requests import Session, __build__ as requests_version
 from requests.adapters import HTTPAdapter
 
 from streamlink.packages.requests_file import FileAdapter
+from streamlink.plugin.api import useragents
 
 try:
     from requests.packages.urllib3.util import Timeout
@@ -63,6 +64,9 @@ class HTTPSession(Session):
     def __init__(self, *args, **kwargs):
         Session.__init__(self, *args, **kwargs)
 
+        if self.headers['User-Agent'].startswith('python-requests'):
+            self.headers['User-Agent'] = useragents.FIREFOX
+
         self.timeout = 20.0
 
         if TIMEOUT_ADAPTER_NEEDED:
@@ -75,7 +79,6 @@ class HTTPSession(Session):
     def determine_json_encoding(cls, sample):
         """
         Determine which Unicode encoding the JSON text sample is encoded with
-
         RFC4627 (http://www.ietf.org/rfc/rfc4627.txt) suggests that the encoding of JSON text can be determined
         by checking the pattern of NULL bytes in first 4 octets of the text.
         :param sample: a sample of at least 4 bytes of the JSON text
@@ -108,7 +111,6 @@ class HTTPSession(Session):
 
     def parse_cookies(self, cookies, **kwargs):
         """Parses a semi-colon delimited list of cookies.
-
         Example: foo=bar;baz=qux
         """
         for name, value in _parse_keyvalue_list(cookies):
@@ -116,7 +118,6 @@ class HTTPSession(Session):
 
     def parse_headers(self, headers):
         """Parses a semi-colon delimited list of headers.
-
         Example: foo=bar;baz=qux
         """
         for name, value in _parse_keyvalue_list(headers):
@@ -124,7 +125,6 @@ class HTTPSession(Session):
 
     def parse_query_params(self, cookies, **kwargs):
         """Parses a semi-colon delimited list of query parameters.
-
         Example: foo=bar;baz=qux
         """
         for name, value in _parse_keyvalue_list(cookies):
@@ -155,7 +155,12 @@ class HTTPSession(Session):
 
         while True:
             try:
-                res = Session.request(self, method, url, headers=headers, params=params, timeout=timeout, proxies=proxies, *args, **kwargs)
+                res = Session.request(self, method, url,
+                                      headers=headers,
+                                      params=params,
+                                      timeout=timeout,
+                                      proxies=proxies,
+                                      *args, **kwargs)
                 if raise_for_status and res.status_code not in acceptable_status:
                     res.raise_for_status()
                 break

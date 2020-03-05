@@ -5,7 +5,7 @@ from ..compat import is_win32, is_py3
 
 import xbmc, xbmcvfs
 
-xdg_cache = tmp_dir = xbmc.translatePath('special://profile/addon_data/script.module.streamlink')
+xdg_cache = tmp_dir = xbmc.translatePath('special://profile/addon_data/script.module.streamlink.base')
 
 if not xbmcvfs.exists(tmp_dir):
     xbmcvfs.mkdirs(tmp_dir)

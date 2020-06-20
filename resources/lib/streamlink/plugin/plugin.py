@@ -200,7 +200,8 @@ class Plugin(object):
 
     @classmethod
     def bind(cls, session, module, user_input_requester=None):
-        cls.cache = Cache(filename="plugin-cache.json", key_prefix=module)
+        cls.cache = Cache(filename="plugin-cache.json",
+                          key_prefix=module)
         cls.logger = logging.getLogger("streamlink.plugin." + module)
         cls.module = module
         cls.session = session
@@ -332,7 +333,9 @@ class Plugin(object):
             stream_types = self.default_stream_types(ostreams)
 
         # Add streams depending on stream type and priorities
-        sorted_streams = sorted(iterate_streams(ostreams), key=partial(stream_type_priority, stream_types))
+        sorted_streams = sorted(iterate_streams(ostreams),
+                                key=partial(stream_type_priority,
+                                            stream_types))
 
         streams = {}
         for name, stream in sorted_streams:
@@ -374,7 +377,7 @@ class Plugin(object):
             # Force lowercase name and replace space with underscore.
             streams[name.lower()] = stream
 
-        # Create the best/worst synonmys
+        # Create the best/worst synonyms
         def stream_weight_only(s):
             return (self.stream_weight(s)[0] or (len(streams) == 1 and 1))
 
@@ -523,5 +526,6 @@ class Plugin(object):
             except NotImplementedError:  # ignore this and raise a FatalPluginError
                 pass
         raise FatalPluginError("This plugin requires user input, however it is not supported on this platform")
+
 
 __all__ = ["Plugin"]

@@ -3,13 +3,16 @@ import re
 import struct
 
 from collections import defaultdict, namedtuple
-from Crypto.Cipher import AES
+from Cryptodome.Cipher import AES
+from requests.exceptions import ChunkedEncodingError
 
+from streamlink.compat import urlparse
 from streamlink.exceptions import StreamError
 from streamlink.stream import hls_playlist
 from streamlink.stream.ffmpegmux import FFMPEGMuxer, MuxedStream
 from streamlink.stream.http import HTTPStream
 from streamlink.stream.segmented import (SegmentedStreamReader, SegmentedStreamWriter, SegmentedStreamWorker)
+from streamlink.utils import LazyFormatter
 
 log = logging.getLogger(__name__)
 Sequence = namedtuple("Sequence", "num segment")
@@ -44,6 +47,7 @@ class HLSStreamWriter(SegmentedStreamWriter):
         self.key_data = None
         self.key_uri = None
         self.key_uri_override = options.get("hls-segment-key-uri")
+        self.stream_data = options.get("hls-segment-stream-data")
 
         if self.ignore_names:
             # creates a regex from a list of segment names,
@@ -60,7 +64,18 @@ class HLSStreamWriter(SegmentedStreamWriter):
         if not self.key_uri_override and not key.uri:
             raise StreamError("Missing URI to decryption key")
 
-        key_uri = self.key_uri_override if self.key_uri_override else key.uri
+        if self.key_uri_override:
+            p = urlparse(key.uri)
+            key_uri = LazyFormatter.format(
+                self.key_uri_override,
+                url=key.uri,
+                scheme=p.scheme,
+                netloc=p.netloc,
+                path=p.path,
+                query=p.query,
+            )
+        else:
+            key_uri = key.uri
 
         if self.key_uri != key_uri:
             res = self.session.http.get(key_uri, exception=StreamError,
@@ -107,6 +122,8 @@ class HLSStreamWriter(SegmentedStreamWriter):
                 return
 
             return self.session.http.get(sequence.segment.uri,
+                                         stream=(self.stream_data
+                                                 and not sequence.segment.key),
                                          timeout=self.timeout,
                                          exception=StreamError,
                                          retries=self.retries,
@@ -137,8 +154,13 @@ class HLSStreamWriter(SegmentedStreamWriter):
 
             self.reader.buffer.write(pkcs7_decode(decrypted_chunk))
         else:
-            for chunk in res.iter_content(chunk_size):
-                self.reader.buffer.write(chunk)
+            try:
+                for chunk in res.iter_content(chunk_size):
+                    self.reader.buffer.write(chunk)
+            except ChunkedEncodingError:
+                log.error("Download of segment {0} failed", sequence.num)
+
+                return
 
         log.debug("Download of segment {0} complete", sequence.num)
 
@@ -208,19 +230,24 @@ class HLSStreamWorker(SegmentedStreamWorker):
         sequences = [Sequence(media_sequence + i, s)
                      for i, s in enumerate(playlist.segments)]
 
-        if sequences:
-            self.process_sequences(playlist, sequences)
+        self.process_sequences(playlist, sequences)
+
+    def _set_playlist_reload_time(self, playlist, sequences):
+        self.playlist_reload_time = (playlist.target_duration
+                                     or len(sequences) > 0 and sequences[-1].segment.duration)
 
     def process_sequences(self, playlist, sequences):
+        self._set_playlist_reload_time(playlist, sequences)
+
+        if not sequences:
+            return
+
         first_sequence, last_sequence = sequences[0], sequences[-1]
 
         if first_sequence.segment.key and first_sequence.segment.key.method != "NONE":
             log.debug("Segments in this playlist are encrypted")
 
-        self.playlist_changed = ([s.num for s in self.playlist_sequences] !=
-                                 [s.num for s in sequences])
-        self.playlist_reload_time = (playlist.target_duration or
-                                     last_sequence.segment.duration)
+        self.playlist_changed = ([s.num for s in self.playlist_sequences] != [s.num for s in sequences])
         self.playlist_sequences = sequences
 
         if not self.playlist_changed:
@@ -353,6 +380,10 @@ class HLSStream(HTTPStream):
         return reader
 
     @classmethod
+    def _get_variant_playlist(cls, res):
+        return hls_playlist.load(res.text, base_uri=res.url)
+
+    @classmethod
     def parse_variant_playlist(cls, session_, url, name_key="name",
                                name_prefix="", check_streams=False,
                                force_restart=False, name_fmt=None,
@@ -378,7 +409,7 @@ class HLSStream(HTTPStream):
         res = session_.http.get(url, exception=IOError, **request_params)
 
         try:
-            parser = hls_playlist.load(res.text, base_uri=res.url)
+            parser = cls._get_variant_playlist(res)
         except ValueError as err:
             raise IOError("Failed to parse playlist: {0}".format(err))
 
@@ -408,14 +439,13 @@ class HLSStream(HTTPStream):
                     default_audio = [media]
 
                 # select the first audio stream that matches the users explict language selection
-                if (('*' in audio_select or media.language in audio_select or media.name in audio_select) or
-                        ((not preferred_audio or media.default) and locale.explicit and locale.equivalent(
+                if (('*' in audio_select or media.language in audio_select or media.name in audio_select)
+                        or ((not preferred_audio or media.default) and locale.explicit and locale.equivalent(
                             language=media.language))):
                     preferred_audio.append(media)
 
             # final fallback on the first audio stream listed
-            fallback_audio = fallback_audio or (len(audio_streams) and
-                                                audio_streams[0].uri and [audio_streams[0]])
+            fallback_audio = fallback_audio or (len(audio_streams) and audio_streams[0].uri and [audio_streams[0]])
 
             if playlist.stream_info.resolution:
                 width, height = playlist.stream_info.resolution
@@ -432,8 +462,12 @@ class HLSStream(HTTPStream):
             if name_fmt:
                 stream_name = name_fmt.format(**names)
             else:
-                stream_name = (names.get(name_key) or names.get("name") or
-                               names.get("pixels") or names.get("bitrate"))
+                stream_name = (
+                    names.get(name_key)
+                    or names.get("name")
+                    or names.get("pixels")
+                    or names.get("bitrate")
+                )
 
             if not stream_name:
                 continue
@@ -465,7 +499,8 @@ class HLSStream(HTTPStream):
                     u"(language={0}, name={1})".format(x.language, (x.name or "N/A"))
                     for x in external_audio
                 ])
-                log.debug(u"Using external audio tracks for stream {0} {1}".format(stream_name, external_audio_msg))
+                log.debug(u"Using external audio tracks for stream {0} {1}".format(
+                          stream_name, external_audio_msg))
 
                 stream = MuxedHLSStream(session_,
                                         video=playlist.uri,

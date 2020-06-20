@@ -1,4 +1,5 @@
 from sys import getfilesystemencoding
+
 from streamlink.compat import is_win32, is_py2
 
 
@@ -14,7 +15,10 @@ def get_filesystem_encoding():
 
 def maybe_encode(text, encoding="utf8"):
     if is_py2:
-        return text.encode(encoding)
+        if isinstance(text, unicode):
+            return text.encode(encoding)
+        else:
+            return text
     else:
         return text
 

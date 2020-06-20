@@ -3,8 +3,8 @@ import logging
 import re
 import time
 
-from Crypto.Cipher import PKCS1_v1_5
-from Crypto.PublicKey import RSA
+from Cryptodome.Cipher import PKCS1_v1_5
+from Cryptodome.PublicKey import RSA
 
 import streamlink
 from streamlink.exceptions import FatalPluginError

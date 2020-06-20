@@ -3,7 +3,7 @@ import logging
 import re
 from functools import partial
 
-from Crypto.Cipher import Blowfish
+from Cryptodome.Cipher import Blowfish
 
 from streamlink.compat import bytes, is_py3
 from streamlink.plugin import Plugin, PluginArguments, PluginArgument
@@ -59,7 +59,7 @@ class ZTNRClient(object):
 class Rtve(Plugin):
     secret_key = base64.b64decode("eWVMJmRhRDM=")
     url_re = re.compile(r"""
-        https?://(?:www\.)?rtve\.es/(?:directo|noticias|television|deportes|alacarta|drmn)/.*?/?
+        https?://(?:www\.)?rtve\.es/(?:directo|infantil|noticias|television|deportes|alacarta|drmn)/.*?/?
     """, re.VERBOSE)
     cdn_schema = validate.Schema(
         validate.transform(partial(parse_xml, invalid_char_entities=True)),

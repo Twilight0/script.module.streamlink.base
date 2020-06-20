@@ -1,10 +1,13 @@
 import re
+import logging
 
 from binascii import unhexlify
 from collections import namedtuple
 from itertools import starmap
 
 from streamlink.compat import urljoin, urlparse
+
+log = logging.getLogger(__name__)
 
 __all__ = ["load", "M3U8Parser"]
 
@@ -36,9 +39,7 @@ Segment = namedtuple("Segment", "uri duration title key discontinuity byterange 
 
 
 class M3U8(object):
-
     def __init__(self):
-
         self.is_endlist = False
         self.is_master = False
 
@@ -57,7 +58,6 @@ class M3U8(object):
 
 
 class M3U8Parser(object):
-
     _extinf_re = re.compile(r"(?P<duration>\d+(\.\d+)?)(,(?P<title>.+))?")
     _attr_re = re.compile(r"([A-Z\-]+)=(\d+\.\d+|0x[0-9A-z]+|\d+x\d+|\d+|\"(.+?)\"|[0-9A-z\-]+)")
     _range_re = re.compile(r"(?P<range>\d+)(@(?P<offset>.+))?")
@@ -93,7 +93,6 @@ class M3U8Parser(object):
                               streaminf.get("SUBTITLES"))
 
     def split_tag(self, line):
-
         match = self._tag_re.match(line)
 
         if match:
@@ -255,6 +254,7 @@ class M3U8Parser(object):
             return self.m3u8
         else:
             if not line.startswith("#EXTM3U"):
+                log.warning("Malformed HLS Playlist. Expected #EXTM3U, but got {0}".format(line[:250]))
                 raise ValueError("Missing #EXTM3U header")
 
         parse_line = self.parse_line

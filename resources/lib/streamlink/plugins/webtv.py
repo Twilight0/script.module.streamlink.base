@@ -4,7 +4,7 @@ import base64
 
 import binascii
 
-from Crypto.Cipher import AES
+from Cryptodome.Cipher import AES
 
 from streamlink.plugin import Plugin
 from streamlink.plugin.api import validate

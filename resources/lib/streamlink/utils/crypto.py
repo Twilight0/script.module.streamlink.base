@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 import hashlib
 
-from Crypto.Cipher import AES
+from Cryptodome.Cipher import AES
 
 from streamlink.compat import is_py3
 

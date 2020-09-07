@@ -1,3 +1,11 @@
++2020.09.07
+- Update to latest upstream commit
+- Automatically send yes in the dialog for the optional addon installation
+
++2020.08.09
+- Update to latest upstream commit
+- Futures module is not set to optional (on Kodi 19 it is not imported)
+
 +2020.06.21
 - Updated to latest commit
 - Dropped cryptolib in favour of pycryptodome

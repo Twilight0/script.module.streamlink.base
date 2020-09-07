@@ -12,18 +12,6 @@ Full documentation is available at https://streamlink.github.io.
 
 import xbmcaddon, xbmc
 addon = xbmcaddon.Addon
-wait = xbmc.Monitor().waitForAbort
-
-if addon('xbmc.python').getAddonInfo('version') == '2.26.0' and not xbmc.getCondVisibility('System.HasAddon(script.module.futures)'):
-    xbmc.executebuiltin('InstallAddon(script.module.futures)')
-
-    while not wait():
-
-        if xbmc.getCondVisibility('Window.IsActive(yesnodialog)'):
-            xbmc.executebuiltin('SendClick(yesnodialog,11)')
-            break
-        elif not xbmc.getCondVisibility('Window.IsActive(yesnodialog)'):
-            break
 
 __title__ = "streamlink"
 __license__ = "Simplified BSD"
